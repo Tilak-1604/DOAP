@@ -1,0 +1,287 @@
+1️⃣ In
+
+Purpose:Stores al
+
+users
+-----
+id (PK)
+name
+email (UNIQUE)
+password_hash
+is_active
+created_at
+updated_at
+
+
+✔ Common identity
+✔ Works with JWT
+✔ Future-safe
+
+2️⃣ ROLES
+
+Purpose: Defines system roles (RBAC).
+
+roles
+-----
+id (PK)
+role_name
+-- ADVERTISER
+-- SCREEN_OWNER
+-- AD_EDITOR
+-- ADMIN
+
+
+✔ Clean role separation
+✔ Industry standard
+
+3️⃣ USER_ROLES
+
+Purpose: Maps users to roles (many-to-many).
+
+user_roles
+----------
+id (PK)
+user_id (FK → users.id)
+role_id (FK → roles.id)
+
+
+✔ One user can have multiple roles
+✔ No future rewrite
+
+4️⃣ LOCATIONS
+
+P Physical locations of screens.
+
+locations
+---------
+id (PK)
+area_name
+city
+latitude
+longitude
+created_at
+
+
+✔ Map view
+✔ Pricing
+✔ AI rules
+
+5️⃣ SCREEN_CATEGORIES
+
+Purpose:Screen ranking
+
+screen_categories
+-----------------
+id (PK)
+category_name
+-- SHOP
+-- MALL
+-- ROADSIDE
+-- PUBLIC_PLACE
+description
+created_at
+
+
+✔ Filtering
+✔ Pricing rules
+✔ AI logic
+
+6️⃣ SCREENS
+
+Purple Core business asset.
+
+screens
+-------
+id (PK)
+screen_name
+owner_id (FK → users.id)   -- SCREEN_OWNER
+category_id (FK → screen_categories.id)
+location_id (FK → locations.id)
+resolution
+size
+base_price
+status  -- PENDING / ACTIVE / INACTIVE
+description
+created_at
+updated_at
+
+
+✔ Owned by Screen Owner
+✔ Approved by Admin
+✔ Used everywhere
+
+7️⃣ TIME_SLOTS
+
+Purpose: Bookable time units.
+
+time_slots
+----------
+id (PK)
+start_time
+end_time
+slot_type  -- PEAK / NON_PEAK
+price_multiplier
+created_at
+
+
+✔ Green/Red calendar
+✔ Dynamic pricing
+
+8️⃣ ADVERTISEMENTS
+
+Purpose: Ad content + editor workflow.
+
+advertisements
+--------------
+id (PK)
+advertiser_id (FK → users.id)
+editor_id (FK → users.id, NULL)   -- AD_EDITOR
+media_url
+media_type  -- IMAGE / VIDEO
+duration_seconds
+status  -- UPLOADED / EDITED / APPROVED / REJECTED
+admin_comment
+created_at
+
+
+✔ Editor role fully integrated
+✔ Reusable ads
+✔ Preview before booking
+
+9️⃣ BO
+
+CouldCampai
+
+bookings
+--------
+id (PK)
+advertiser_id (FK → users.id)
+start_date
+end_date
+is_campaign
+total_price
+status  -- PENDING / CONFIRMED / CANCELLED
+created_at
+updated_at
+
+
+✔ Multi-screen booking
+✔ Payment linked here
+
+🔟 BO
+
+Even though Slot locking + availability.
+
+booking_screens
+---------------
+id (PK)
+booking_id (FK → bookings.id)
+screen_id (FK → screens.id)
+booking_date
+time_slot_id (FK → time_slots.id)
+slot_status  -- LOCKED / CONFIRMED
+lock_expiry
+created_at
+
+
+✔ Prevents overlap
+✔ Green/Red calendar
+✔ Campaign support
+
+1️⃣1️⃣ PAYMENTS
+
+Purpose: Payment integrity.
+
+payments
+--------
+id (PK)
+booking_id (FK → bookings.id)
+amount
+payment_status  -- CREATED / SUCCESS / FAILED
+transaction_reference
+payment_time
+created_at
+
+
+✔ Booking valid only after SUCCESS
+✔ Razorpay-ready
+
+1️⃣2️⃣ PRICING_RULES
+
+Purpose: Dynamic pricing engine.
+
+pricing_rules
+-------------
+id (PK)
+location_id (FK → locations.id)
+category_id (FK → screen_categories.id)
+slot_type  -- PEAK / NON_PEAK
+price_multiplier
+active
+created_at
+
+
+✔ Admin-controlled
+✔ Used by pricing + AI
+
+1️⃣3️⃣ EM
+
+Purple Booking confirmation proof.
+
+email_logs
+----------
+id (PK)
+user_id (FK → users.id)
+booking_id (FK → bookings.id)
+email_type  -- CONFIRMATION
+status  -- SENT / FAILED
+created_at
+
+
+✔ Reliable notification
+✔ Debugging
+
+1️⃣4️⃣ ANALYTICS_DAILY
+
+Purple Admin dashboard snapshot.
+
+analytics_daily
+---------------
+id (PK)
+date
+total_bookings
+total_revenue
+total_ads
+
+
+✔ Admin analytics
+✔ No runtime heavy queries
+
+🚫 DERIVED (NOT STORED)
+SCREEN_AVAILABILITY
+
+Calculated from:
+
+booking_screens
+
+time_slots
+
+Never stored(correct
+
+🔐 ROLE → TABLE ACCESS (FINAL)
+Role	Access
+Advertiser	users, bookings, booking_screens, payments, advertisements
+Screen Owner	users, screens, bookings (read), payments (read)
+Ad Editor	users, advertisements
+Admin	ALL tables
+AI Engine	screens, locations, categories, pricing_rules
+✅ FINAL WITH
+
+✔ All 14 locked functionalities covered
+✔ All 4 roles fully integrated
+✔ No table is extra
+✔ No feature missing
+✔ JPA-ready
+✔ SRS & UML ready
+✔ Backend-first safe
+✔ Future-proof

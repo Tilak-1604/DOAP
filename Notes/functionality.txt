@@ -1,0 +1,1715 @@
+📌 PROJECT TITLE
+
+DOAP – Digital Outdoor Advertising Platform
+
+1️⃣ PROJECT OVERVIEW (WHAT IS DOAP)
+
+DOAP is a web-based Digital Outdoor Advertising Platform that enables businesses and individuals to book digital display screens located across different areas (roads, malls, railway stations, shops, etc.) through a centralized online system.
+
+Instead of manually contacting screen owners, negotiating pricing, or physically visiting locations, DOAP provides a single platform where advertisers can:
+
+View available digital screens
+
+Choose suitable locations
+
+Select time slots
+
+Upload advertisement content
+
+Get AI-based recommendations
+
+Make online payments
+
+Track booking status
+
+The current scope focuses on software management only.
+Actual physical screen playback is considered a future enhancement.
+
+2️⃣ PROBLEM STATEMENT (WHY THIS PROJECT)
+
+Traditional outdoor digital advertising suffers from:
+
+No centralized system to view available screens
+
+Manual communication with screen owners
+
+No transparency in pricing
+
+Manual scheduling and conflicts
+
+No intelligent recommendation for ad placement
+
+Difficulty for small businesses to advertise effectively
+
+DOAP solves these issues by automating the entire advertising lifecycle.
+
+3️⃣ USERS OF THE SYSTEM (ROLES)
+1. Advertiser
+
+A person or business who wants to advertise.
+
+Responsibilities:
+
+Register & login
+
+Browse screens
+
+Get AI-based recommendations
+
+Upload ad content or request editor support
+
+Book screens and time slots
+
+Make payment
+
+Track booking and ad status
+
+2. Screen Owner
+
+A person or organization that owns digital display screens.
+
+Responsibilities:
+
+Register on platform
+
+Add digital screens
+
+Provide screen details (location, category, size)
+
+Set base pricing
+
+Earn revenue from ads
+
+3. Advertisement Editor
+
+A professional who helps advertisers create or improve ad content.
+
+Responsibilities:
+
+Receive ad-edit requests
+
+Design/edit advertisements
+
+Upload final approved ad content
+
+This ensures quality advertisements on the platform.
+
+4. Admin
+
+Platform controller.
+
+Responsibilities:
+
+Approve screen owners & screens
+
+Approve advertisements
+
+Manage pricing rules
+
+Monitor bookings & payments
+
+Maintain system integrity
+
+5. AI Recommendation Engine (System Role)
+
+Not a human user.
+
+Responsibilities:
+
+Analyze advertiser requirements
+
+Recommend best screens based on:
+
+Business type
+
+Area of interest
+
+Screen category
+
+Availability
+
+Price range
+
+AI assists decision-making but does not override human control.
+
+4️⃣ COMPLETE FUNCTIONALITIES (SMALLEST TO LARGEST)
+🔐 Authentication & Authorization
+
+User registration
+
+User login
+
+Role-based access (Advertiser, Screen Owner, Editor, Admin)
+
+📍 Location Management
+
+Each screen is linked to a physical location
+
+Location includes:
+
+Area name
+
+City
+
+Latitude & longitude
+
+Area type (railway, mall, college, etc.)
+
+This supports:
+
+Map view
+
+Area-based pricing
+
+AI recommendations
+
+🖥️ Screen Management
+
+Screen owners can add screens
+
+Each screen has:
+
+Location
+
+Category (roadside, mall, shop, etc.)
+
+Resolution & size
+
+Base price
+
+Availability status
+
+Admin approval is required before screen becomes active.
+
+📂 Screen Categorization
+
+Screens are categorized to help:
+
+Pricing
+
+AI decision-making
+
+Filtering
+
+Examples:
+
+Roadside screen
+
+Mall screen
+
+Railway station screen
+
+Shop display
+
+🗓️ Availability & Scheduling
+
+Screens are booked based on:
+
+Date
+
+Time slot
+
+System prevents double booking
+
+Availability is shown visually (free / booked)
+
+📢 Advertisement Management
+
+Advertisers upload ad content (image/video)
+
+Content metadata is stored
+
+Editor can assist in content creation
+
+Admin approves content before booking
+
+🤖 AI-Based Recommendation (CORE FEATURE)
+
+AI recommends best screens for advertisers based on:
+
+Business type (restaurant, hotel, coaching, etc.)
+
+Area of interest (food zones, travel hubs, education areas)
+
+Screen category
+
+Availability
+
+Budget constraints
+
+This avoids ineffective ad placement (e.g., restaurant ads near schools).
+
+💰 Dynamic Pricing Support
+
+Pricing varies based on:
+
+Location
+
+Screen category
+
+Time slot (peak / non-peak)
+
+Admin controls pricing rules
+
+AI can assist in pricing suggestions
+
+💳 Payment Management
+
+Online payment integration
+
+Booking confirmed only after payment
+
+Payment records stored securely
+
+📊 Booking Tracking
+
+Advertisers can view:
+
+Active bookings
+
+Past bookings
+
+Payment status
+
+Admin can monitor all bookings
+
+5️⃣ SYSTEM FLOW (HIGH-LEVEL)
+
+User registers/login
+
+Advertiser enters campaign details
+
+AI suggests best screens
+
+Advertiser selects screens & time slots
+
+Ad content uploaded / edited
+
+Admin approval
+
+Payment made
+
+Booking scheduled
+
+Status tracking
+
+6️⃣ DATABASE SCHEMA (COMPLETE & FINAL)
+
+Below is the full database schema required for the project.
+
+🧑‍💼 USERS
+
+Stores all users.
+
+id (PK)
+
+name
+
+email (unique)
+
+password
+
+role (Advertiser / Screen Owner / Editor / Admin)
+
+created_at
+
+📍 LOCATIONS
+
+Stores physical locations.
+
+id (PK)
+
+area_name
+
+city
+
+latitude
+
+longitude
+
+area_type (railway, mall, college, etc.)
+
+🗂️ SCREEN_CATEGORIES
+
+Defines screen types.
+
+id (PK)
+
+name
+
+description
+
+🖥️ SCREENS
+
+Stores digital screens.
+
+id (PK)
+
+name
+
+owner_id (FK → users)
+
+location_id (FK → locations)
+
+category_id (FK → screen_categories)
+
+resolution
+
+size
+
+base_price
+
+status (ACTIVE / INACTIVE)
+
+📢 ADVERTISEMENTS
+
+Stores ad metadata.
+
+id (PK)
+
+advertiser_id (FK → users)
+
+editor_id (FK → users, nullable)
+
+file_url
+
+file_type
+
+duration
+
+status (PENDING / APPROVED / REJECTED)
+
+📅 BOOKINGS
+
+Represents an advertising campaign.
+
+id (PK)
+
+advertiser_id (FK → users)
+
+start_date
+
+end_date
+
+total_price
+
+status (CONFIRMED / CANCELLED)
+
+🔗 BOOKING_SCREENS
+
+Maps bookings to screens.
+
+id (PK)
+
+booking_id (FK → bookings)
+
+screen_id (FK → screens)
+
+date
+
+time_slot
+
+💳 PAYMENTS
+
+Stores payment info.
+
+id (PK)
+
+booking_id (FK → bookings)
+
+amount
+
+payment_status
+
+transaction_id
+
+payment_date
+
+💰 PRICING_RULES
+
+Defines dynamic pricing.
+
+id (PK)
+
+location_id (FK → locations)
+
+category_id (FK → screen_categories)
+
+multiplier
+
+peak_time
+
+7️⃣ WHY THIS PROJECT IS STRONG
+
+Solves a real-world problem
+
+Backend-first architecture
+
+Clean database design
+
+AI-based intelligence
+
+Modular & scalable
+
+Suitable for real deployment
+
+8️⃣ ONE-LINE SUMMARY (FOR SIR / VIVA)
+
+DOAP is a centralized digital outdoor advertising platform that allows advertisers to book, schedule, and manage ads on digital screens using intelligent recommendations, automated scheduling, and secure payments.
+
+🔒 FINAL NOTE (VERY IMPORTANT)
+
+This document:
+
+Defines your entire project
+
+Prevents confusion later
+
+Can be used for:
+
+SRS
+
+Viva
+
+UML creation
+
+Final report
+
+Development reference
+
+If you want next, I can:
+
+Convert this into SRS format
+
+Convert DB schema into ER diagram explanation
+
+Prepare viva questions & answers
+
+Just tell me.
+
+functionality still not good whichevr you give me in previous ouee chat
+
+✅ REQUIREMENT FREEZE – DOAP (LOCKED v1.0)
+
+We are now locking features.
+Anything new later → optional enhancement, not core dependency.
+
+🔐 1. AUTHENTICATION & ACCESS CONTROL
+Required
+
+User signup
+
+User login
+
+Admin login
+
+JWT-based authentication
+
+Role-based access (USER / ADMIN)
+
+Smallest Things Needed
+
+User identity
+
+Roles
+
+Secure session handling
+
+Password encryption
+
+Token expiry & refresh
+
+📌 Locked ✅
+
+🗺️ 2. SCREEN DISCOVERY (LIST + MAP VIEW)
+
+👉 Decision:
+We will support BOTH (list + map).
+
+Why?
+
+List = comparison
+
+Map = location understanding
+
+Required
+
+Screen list view (cards/table)
+
+Map view (markers only)
+
+Filter by:
+
+Location
+
+Category
+
+Price range
+
+Smallest Things Needed
+
+Location coordinates
+
+Screen metadata
+
+Map provider (Leaflet preferred)
+
+📌 Locked ✅
+
+🖥️ 3. INDIVIDUAL SCREEN DETAIL PAGE
+Required
+
+Screen name
+
+Location
+
+Category (shop, mall, roadside)
+
+Pricing rules
+
+Availability calendar
+
+Preview examples (dummy)
+
+Smallest Things Needed
+
+Unique screen ID
+
+Screen-category mapping
+
+Pricing model
+
+📌 Locked ✅
+
+📅 4. BOOKING SYSTEM (CORE ENGINE)
+Required
+
+Select date
+
+Select time slot
+
+Check availability
+
+Prevent overlap
+
+Store booking
+
+Business Rules
+
+One screen → one booking per slot
+
+No overlap allowed
+
+Booking valid only after payment
+
+Smallest Things Needed
+
+Time-slot model
+
+Availability engine
+
+Conflict detection logic
+
+📌 Locked ✅
+
+💳 5. PAYMENT INTEGRITY
+Required
+
+Online payment
+
+Payment verification
+
+Booking confirmation after success
+
+Decision
+
+Mock payment for demo
+
+Structure ready for Razorpay later
+
+Smallest Things Needed
+
+Payment status
+
+Transaction reference
+
+Failure handling
+
+📌 Locked ✅
+
+🟢🔴 6. AVAILABILITY CALENDAR (GREEN / RED)
+Required
+
+Calendar UI
+
+Green = available
+
+Red = booked
+
+Click to select slots
+
+Smallest Things Needed
+
+Date-wise booking data
+
+Slot-based status calculation
+
+📌 Locked ✅
+
+👁️ 7. AD PREVIEW BEFORE BOOKING
+Required
+
+Preview uploaded image/video
+
+Duration validation
+
+Smallest Things Needed
+
+Media preview
+
+File metadata
+
+📌 Locked ✅
+
+🏷️ 8. SCREEN CATEGORIZATION
+Required Categories
+
+Shop
+
+Mall
+
+Roadside
+
+Public place
+
+Smallest Things Needed
+
+Category master
+
+Mapping with screens
+
+📌 Locked ✅
+
+📧 9. BOOKING CONFIRMATION EMAIL
+Required
+
+Email after:
+
+Successful payment
+
+Booking confirmation
+
+Smallest Things Needed
+
+Email service (SMTP / mock)
+
+Email templates
+
+📌 Locked ✅
+
+💰 10. DYNAMIC PRICING
+Pricing Factors
+
+Screen category
+
+Location
+
+Time slot (peak / non-peak)
+
+Duration
+
+Smallest Things Needed
+
+Pricing rules engine
+
+Configurable rates (admin)
+
+📌 Locked ✅
+
+🤖 11. AI RECOMMENDATION (LIMITED & SAFE)
+
+👉 Decision (IMPORTANT):
+We keep this VERY SMALL & OPTIONAL to avoid risk.
+
+Phase-1 AI (Rule + Light AI)
+
+Recommend screens based on:
+
+Location
+
+Budget
+
+Availability
+
+Category
+
+❌ No heavy ML training now
+
+Smallest Things Needed
+
+Rule-based recommendation logic
+
+(Future: AI API hook)
+
+📌 Locked as BASIC ✅
+
+🛡️ 12. CONTENT VALIDATION (UPLOAD CHECK)
+Required
+
+File type check
+
+File size limit
+
+Video duration limit
+
+No malicious file
+
+Smallest Things Needed
+
+Validation rules
+
+Upload constraints
+
+📌 Locked ✅
+
+🤖 13. CHATBOT (VERY FAR, MINIMAL)
+
+👉 Decision:
+Simple rule-based chatbot only
+
+Capabilities
+
+How to book
+
+Screen availability
+
+Pricing help
+
+❌ No AI conversation now
+
+Smallest Things Needed
+
+FAQ-based bot
+
+Static responses
+
+📌 Locked (MINIMAL) ✅
+
+📢 14. MULTI-SCREEN BOOKING (IMPORTANT)
+Required
+
+Select multiple screens
+
+Same ad
+
+Same time slots
+
+Single payment
+
+Smallest Things Needed
+
+Campaign concept
+
+Group booking logic
+
+📌 Locked ✅
+
+
+this is in this new role we have to add so this we have to in and also new as per new user understand
+
+now give me perfectly
+
+Thank you for the clarification.
+Now I understand exactly what you want:
+
+You already have a better, more precise requirement freeze (the one you pasted)
+
+You want:
+
+All functionalities explained perfectly (smallest to largest)
+
+DB schema that matches THESE locked requirements exactly
+
+Nothing missing, nothing extra
+
+This should become the single source of truth for:
+
+SRS
+
+UML (later)
+
+Backend-first development
+
+Explaining to sir
+
+I will now give you a clean, corrected, FINAL version, aligned 100% with your pasted “REQUIREMENT FREEZE – DOAP (LOCKED v1.0)”.
+
+I will not mix old ideas, not invent new ones, and not skip edge cases.
+
+✅ DOAP – FINAL FUNCTIONAL & DATA DESIGN
+(LOCKED v1.0 – BACKEND-FIRST, AI-LIGHT, SAFE)
+1️⃣ AUTHENTICATION & ACCESS CONTROL
+Purpose
+
+Securely identify users and control access to system features.
+
+Actors
+
+User (Advertiser / Screen Owner / Editor)
+
+Admin
+
+Functionalities
+
+User signup
+
+User login
+
+Admin login
+
+JWT-based authentication
+
+Role-based authorization
+
+Smallest Functional Units
+
+Unique user identity (email)
+
+Password encryption (hashing)
+
+JWT token generation
+
+Token expiration & refresh
+
+Role validation on each API
+
+Why This Is Mandatory
+
+Every other feature depends on who the user is and what role they have.
+
+📌 LOCKED – CORE DEPENDENCY
+
+2️⃣ SCREEN DISCOVERY (LIST + MAP VIEW)
+Purpose
+
+Allow users to find and understand screens before booking.
+
+Views Supported
+
+List View
+
+For comparison (price, category, location)
+
+Map View
+
+For geographical understanding only
+
+Functionalities
+
+Fetch all active screens
+
+Display as list (cards/table)
+
+Display as map markers
+
+Apply filters:
+
+Location
+
+Screen category
+
+Price range
+
+Smallest Functional Units
+
+Screen metadata
+
+Location coordinates (lat/long)
+
+Category mapping
+
+Map provider integration (Leaflet)
+
+📌 LOCKED – USER ENTRY POINT
+
+3️⃣ INDIVIDUAL SCREEN DETAIL PAGE
+Purpose
+
+Provide complete information about one screen before booking.
+
+Functionalities
+
+Screen name & description
+
+Location details
+
+Screen category
+
+Pricing logic (base + dynamic)
+
+Availability calendar (read-only)
+
+Preview examples (dummy media)
+
+Smallest Functional Units
+
+Unique screen ID
+
+Screen → category mapping
+
+Screen → location mapping
+
+Pricing rule association
+
+📌 LOCKED – DECISION SUPPORT PAGE
+
+4️⃣ BOOKING SYSTEM (CORE ENGINE)
+Purpose
+
+Reserve screens for specific dates & time slots without conflicts.
+
+Functionalities
+
+Select date(s)
+
+Select time slot(s)
+
+Check availability
+
+Prevent overlapping bookings
+
+Store booking as PENDING → CONFIRMED
+
+Business Rules
+
+One screen can have only one booking per slot
+
+Overlapping bookings are rejected
+
+Booking becomes valid only after payment success
+
+Smallest Functional Units
+
+Time-slot model
+
+Date-wise availability calculation
+
+Conflict detection logic
+
+Booking state machine
+
+📌 LOCKED – HEART OF SYSTEM
+
+5️⃣ PAYMENT INTEGRITY
+Purpose
+
+Ensure bookings are confirmed only after payment success.
+
+Functionalities
+
+Create payment request
+
+Verify payment result
+
+Confirm or cancel booking
+
+Handle payment failure
+
+Decision
+
+Mock payment for demo
+
+Razorpay-ready structure
+
+Smallest Functional Units
+
+Payment status
+
+Transaction reference
+
+Failure rollback logic
+
+📌 LOCKED – DATA CONSISTENCY
+
+6️⃣ AVAILABILITY CALENDAR (GREEN / RED)
+Purpose
+
+Visually represent availability for users.
+
+Functionalities
+
+Calendar view
+
+Green = available
+
+Red = booked
+
+Slot selection
+
+Smallest Functional Units
+
+Date-wise booking aggregation
+
+Slot-based availability computation
+
+📌 LOCKED – UX CLARITY
+
+7️⃣ AD PREVIEW BEFORE BOOKING
+Purpose
+
+Ensure advertiser knows exactly what will be displayed.
+
+Functionalities
+
+Preview uploaded image/video
+
+Validate duration vs slot duration
+
+Show resolution constraints
+
+Smallest Functional Units
+
+Media metadata
+
+Browser preview
+
+Duration validation
+
+📌 LOCKED – CONTENT CONFIDENCE
+
+8️⃣ SCREEN CATEGORIZATION
+Purpose
+
+Enable filtering, pricing, and AI logic.
+
+Categories (Locked)
+
+Shop
+
+Mall
+
+Roadside
+
+Public place
+
+Smallest Functional Units
+
+Category master table
+
+Screen-category mapping
+
+📌 LOCKED – CLASSIFICATION LAYER
+
+9️⃣ BOOKING CONFIRMATION EMAIL
+Purpose
+
+Provide official confirmation to user.
+
+Triggers
+
+Successful payment
+
+Booking confirmation
+
+Smallest Functional Units
+
+Email service (SMTP / mock)
+
+Template-based email
+
+📌 LOCKED – USER TRUST
+
+🔟 DYNAMIC PRICING
+Purpose
+
+Adjust price based on demand and context.
+
+Pricing Factors
+
+Screen category
+
+Location
+
+Time slot (peak / non-peak)
+
+Duration
+
+Smallest Functional Units
+
+Pricing rules table
+
+Admin-configurable multipliers
+
+Price calculation engine
+
+📌 LOCKED – BUSINESS LOGIC
+
+1️⃣1️⃣ AI RECOMMENDATION (LIMITED & SAFE)
+Purpose
+
+Help users choose better screens, not automate decisions.
+
+Phase-1 (LOCKED)
+
+Rule-based recommendation using:
+
+Location
+
+Budget
+
+Availability
+
+Category
+
+❌ No heavy ML
+❌ No real-time learning
+
+Smallest Functional Units
+
+Rule engine
+
+Scoring logic
+
+Recommendation API
+
+📌 LOCKED – OPTIONAL INTELLIGENCE
+
+1️⃣2️⃣ CONTENT VALIDATION (UPLOAD CHECK)
+Purpose
+
+Protect system from invalid or harmful uploads.
+
+Functionalities
+
+File type validation
+
+File size limit
+
+Video duration limit
+
+Malicious file prevention
+
+Smallest Functional Units
+
+Upload constraints
+
+Server-side validation
+
+📌 LOCKED – SECURITY
+
+1️⃣3️⃣ CHATBOT (MINIMAL)
+Purpose
+
+Basic user guidance.
+
+Capabilities
+
+How to book
+
+Availability explanation
+
+Pricing help
+
+Scope
+
+Rule-based FAQ
+
+Static responses only
+
+📌 LOCKED – LOW PRIORITY
+
+1️⃣4️⃣ MULTI-SCREEN BOOKING (CAMPAIGN)
+Purpose
+
+Enable bulk advertising campaigns.
+
+Functionalities
+
+Select multiple screens
+
+Same ad
+
+Same time slots
+
+Single payment
+
+Smallest Functional Units
+
+Campaign concept
+
+Booking-to-multiple-screens mapping
+
+📌 LOCKED – IMPORTANT FEATURE
+
+🗄️ FINAL DATABASE SCHEMA (MATCHES ABOVE EXACTLY)
+USERS
+
+id (PK)
+
+name
+
+email (unique)
+
+password
+
+role (USER / ADMIN)
+
+created_at
+
+LOCATIONS
+
+id (PK)
+
+area_name
+
+city
+
+latitude
+
+longitude
+
+SCREEN_CATEGORIES
+
+id (PK)
+
+name
+
+SCREENS
+
+id (PK)
+
+name
+
+owner_id (FK → users)
+
+location_id (FK → locations)
+
+category_id (FK → screen_categories)
+
+base_price
+
+status
+
+ADVERTISEMENTS
+
+id (PK)
+
+advertiser_id (FK → users)
+
+editor_id (FK → users, nullable)
+
+media_url
+
+media_type
+
+duration
+
+status
+
+BOOKINGS
+
+id (PK)
+
+advertiser_id (FK → users)
+
+start_date
+
+end_date
+
+total_price
+
+status
+
+BOOKING_SCREENS
+
+id (PK)
+
+booking_id (FK → bookings)
+
+screen_id (FK → screens)
+
+date
+
+time_slot
+
+PAYMENTS
+
+id (PK)
+
+booking_id (FK → bookings)
+
+amount
+
+payment_status
+
+transaction_id
+
+payment_date
+
+PRICING_RULES
+
+id (PK)
+
+location_id (FK → locations)
+
+category_id (FK → screen_categories)
+
+multiplier
+
+peak_flag
+
+🎯 FINAL STATEMENT (WHAT YOU TELL SIR)
+
+“Sir, we finalized all core functionalities first, then designed the database schema strictly based on those requirements. This ensures no missing dependencies, prevents rework, and allows backend-first development. AI is kept limited and safe, and all business rules are enforced at the backend level.”
+
+🔒 IMPORTANT (PLEASE READ)
+
+This is now your FINAL BASE
+
+Do not change functionality casually
+
+All future work = implementation on this base
+
+UML, SRS, APIs will directly map to this
+
+If you want next, I can:
+
+Convert this into formal SRS
+
+Map each feature to UML diagrams
+
+Create backend development checklist
+
+Just tell me what you want next.
+
+why are you not understand  above is good but after version 1 we add 2 more roles or users screen owner and adv editor for them all ?????
+
+Got it 👍
+Now I fully understand the exact gap you are pointing out.
+You’re right to be frustrated — let me fix this properly and cleanly.
+
+You are saying:
+
+✅ The v1.0 functional freeze is good
+❌ But it is written as if there are only USER / ADMIN
+❌ It does NOT explicitly integrate the two new roles:
+
+Screen Owner
+
+Advertisement Editor
+
+👉 You want v1.0 + these roles fully fitted into ALL functionalities
+👉 Not a separate idea, but properly merged
+
+Now I will give you a corrected, FINAL understanding:
+
+✅ DOAP – REQUIREMENT FREEZE v1.0 (WITH ALL ROLES PROPERLY INTEGRATED)
+
+This is the same v1.0 you wrote,
+but now Screen Owner & Advertisement Editor are FIRST-CLASS citizens in the system.
+
+👥 FINAL ROLES (LOCKED)
+1️⃣ Advertiser (USER)
+
+Wants to advertise
+
+Books screens
+
+Pays money
+
+2️⃣ Screen Owner (NEW – HUMAN ROLE)
+
+Owns digital screens
+
+Lists screens on DOAP
+
+Earns revenue
+
+3️⃣ Advertisement Editor (NEW – HUMAN ROLE)
+
+Helps advertisers create/edit ads
+
+Improves ad quality
+
+Uploads final creatives
+
+4️⃣ Admin
+
+Controls platform
+
+Approves & manages
+
+👉 AI is NOT a role, it is a system component.
+
+🔐 1. AUTHENTICATION & ACCESS CONTROL (UPDATED)
+Who can login?
+
+Advertiser
+
+Screen Owner
+
+Advertisement Editor
+
+Admin
+
+What changes due to new roles?
+
+Role-based access now includes:
+
+ADVERTISER
+SCREEN_OWNER
+AD_EDITOR
+ADMIN
+
+Permissions
+
+Advertiser → booking, payment, ads
+
+Screen Owner → screen management
+
+Editor → ad editing only
+
+Admin → everything
+
+📌 Now roles are REAL, not theoretical
+
+🗺️ 2. SCREEN DISCOVERY (LIST + MAP VIEW)
+Advertiser
+
+Views screens
+
+Filters & compares
+
+Uses map
+
+Screen Owner
+
+❌ Cannot see competitors’ private data
+
+Can view only their own screens in dashboard
+
+Editor
+
+❌ No screen browsing needed
+
+📌 Screen discovery is advertiser-focused, but ownership exists
+
+🖥️ 3. INDIVIDUAL SCREEN DETAIL PAGE
+Advertiser
+
+Views pricing
+
+Checks availability
+
+Decides booking
+
+Screen Owner
+
+Views performance of own screen
+
+Can edit screen details (before admin approval)
+
+Admin
+
+Approves / rejects screen
+
+📌 Screen Owner is now actively involved
+
+📅 4. BOOKING SYSTEM (CORE ENGINE)
+Advertiser
+
+Creates booking
+
+Selects screen(s)
+
+Selects slot(s)
+
+Screen Owner
+
+Cannot override bookings
+
+Can view:
+
+Upcoming bookings
+
+Slot occupancy
+
+Editor
+
+❌ No booking rights
+
+📌 Booking engine is shared data, different access
+
+💳 5. PAYMENT INTEGRITY
+Advertiser
+
+Pays platform
+
+System
+
+Confirms booking
+
+Screen Owner
+
+Sees earnings dashboard
+
+(Payout logic = future)
+
+📌 Screen Owner participation is financially visible
+
+🟢🔴 6. AVAILABILITY CALENDAR
+Advertiser
+
+Sees green/red availability
+
+Screen Owner
+
+Sees availability of own screens
+
+Cannot manually block slots (admin only)
+
+📌 Availability is system-controlled, not owner-controlled
+
+👁️ 7. AD PREVIEW BEFORE BOOKING
+Advertiser
+
+Uploads ad
+
+Previews content
+
+Advertisement Editor (NEW – CORE HERE)
+
+Receives edit request
+
+Modifies ad
+
+Uploads final version
+
+Admin
+
+Approves final ad
+
+📌 Editor is now a core functional role
+
+🏷️ 8. SCREEN CATEGORIZATION
+Screen Owner
+
+Selects category while adding screen
+
+Admin
+
+Approves / corrects category
+
+AI & Pricing
+
+Use category data
+
+📌 Category is entered by owner, validated by admin
+
+📧 9. BOOKING CONFIRMATION EMAIL
+Advertiser
+
+Receives confirmation
+
+Screen Owner
+
+Receives booking notification for own screen
+
+📌 Multiple stakeholders notified
+
+💰 10. DYNAMIC PRICING
+Admin
+
+Defines pricing rules
+
+Screen Owner
+
+Sees final calculated price
+
+Cannot override rules
+
+Advertiser
+
+Pays calculated amount
+
+📌 Pricing control stays centralized
+
+🤖 11. AI RECOMMENDATION (LIMITED & SAFE)
+Advertiser
+
+Uses AI to choose screens
+
+Screen Owner
+
+❌ AI does not promote unfairly
+
+AI uses neutral rules
+
+📌 AI remains platform-level intelligence
+
+🛡️ 12. CONTENT VALIDATION
+Advertiser / Editor
+
+Uploads content
+
+System
+
+Validates file constraints
+
+Admin
+
+Final approval
+
+📌 Editor role exists inside validation flow
+
+🤖 13. CHATBOT (MINIMAL)
+Advertiser
+
+Gets booking help
+
+Screen Owner
+
+Gets “how to add screen” help
+
+📌 Bot now supports both user types
+
+📢 14. MULTI-SCREEN BOOKING (CAMPAIGN)
+Advertiser
+
+Books multiple screens
+
+Screen Owner
+
+Sees campaign bookings affecting their screens
+
+Editor
+
+Designs single ad for campaign
+
+📌 Campaign concept now connects all roles
+
+🗄️ DATABASE SCHEMA (UPDATED FOR ROLES)
+USERS
+
+id
+
+name
+
+email
+
+password
+
+role
+(ADVERTISER, SCREEN_OWNER, AD_EDITOR, ADMIN)
+
+SCREENS
+
+owner_id → Screen Owner
+
+ADVERTISEMENTS
+
+advertiser_id
+
+editor_id → Advertisement Editor
+
+Everything else remains consistent.

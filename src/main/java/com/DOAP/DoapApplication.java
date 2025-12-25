@@ -1,4 +1,4 @@
-package com.example.DOAP;
+package com.DOAP;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
