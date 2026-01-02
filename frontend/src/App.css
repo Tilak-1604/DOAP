@@ -1,0 +1,32 @@
+.App {
+  min-height: 100vh;
+}
+
+.admin-page,
+.owner-page,
+.advertiser-page {
+  padding: 40px;
+  text-align: center;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+}
+
+.admin-page h1,
+.owner-page h1,
+.advertiser-page h1 {
+  font-size: 48px;
+  margin-bottom: 20px;
+}
+
+.admin-page p,
+.owner-page p,
+.advertiser-page p {
+  font-size: 18px;
+  opacity: 0.9;
+}
+
