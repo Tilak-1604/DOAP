@@ -1,0 +1,40 @@
+.approval-buttons {
+  width: 100%;
+}
+
+.approval-actions {
+  display: flex;
+  gap: 10px;
+}
+
+.btn-sm {
+  padding: 8px 16px;
+  font-size: 14px;
+  flex: 1;
+}
+
+.btn-success {
+  background-color: #28a745;
+  color: white;
+}
+
+.btn-success:hover {
+  background-color: #218838;
+}
+
+.btn-success:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.error-message-small {
+  background-color: #fee;
+  border: 1px solid #fcc;
+  color: #c33;
+  padding: 8px;
+  border-radius: 4px;
+  margin-bottom: 10px;
+  font-size: 12px;
+  text-align: center;
+}
+

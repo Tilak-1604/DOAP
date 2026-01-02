@@ -6,6 +6,8 @@ import ProtectedRoute from './components/ProtectedRoute';
 import Login from './components/Login';
 import Register from './components/Register';
 import Dashboard from './components/Dashboard';
+import ScreenList from './components/ScreenList';
+import AddScreen from './components/AddScreen';
 import './App.css';
 
 // Google OAuth Client ID - Replace with your actual Client ID from Google Cloud Console
@@ -14,23 +16,23 @@ const GOOGLE_CLIENT_ID = process.env.REACT_APP_GOOGLE_CLIENT_ID || '936617371696
 function App() {
   return (
     <GoogleOAuthProvider clientId={GOOGLE_CLIENT_ID}>
-      <AuthProvider> // Wraps entire app   Stores:JWTUser infoRoles
+      <AuthProvider>
         <Router>
-            <div className="App">
-              <Routes>
-                {/* Public Routes */}
-                <Route path="/login" element={<Login />} />
-                <Route path="/register" element={<Register />} />
-
-                {/* Protected Routes */}
-                <Route
-                  path="/dashboard"
-                  element={
-                    <ProtectedRoute>
-                      <Dashboard />
-                    </ProtectedRoute>
-                  }
-                />
+        <div className="App">
+          <Routes>
+            {/* Public Routes */}
+            <Route path="/login" element={<Login />} />
+            <Route path="/register" element={<Register />} />
+            
+            {/* Protected Routes */}
+            <Route
+              path="/dashboard"
+              element={
+                <ProtectedRoute>
+                  <Dashboard />
+                </ProtectedRoute>
+              }
+            />
             
             {/* Admin Only Route Example */}
             <Route
@@ -67,6 +69,24 @@ function App() {
                     <h1>Advertiser Panel</h1>
                     <p>This page is only accessible to ADVERTISER users.</p>
                   </div>
+                </ProtectedRoute>
+              }
+            />
+            
+            {/* Screen Management Routes */}
+            <Route
+              path="/screens"
+              element={
+                <ProtectedRoute requiredRoles={['ADMIN', 'SCREEN_OWNER']}>
+                  <ScreenList />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/screens/add"
+              element={
+                <ProtectedRoute requiredRoles={['ADMIN', 'SCREEN_OWNER']}>
+                  <AddScreen />
                 </ProtectedRoute>
               }
             />

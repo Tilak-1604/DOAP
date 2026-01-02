@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { testAPI } from '../services/api';
 import './Dashboard.css';
@@ -7,6 +8,7 @@ const Dashboard = () => {
   const { user, logout, hasRole } = useAuth();
   const [testResults, setTestResults] = useState({});
   const [loading, setLoading] = useState(false);
+  const navigate = useNavigate();
 
   const handleLogout = async () => {
     await logout();
@@ -128,6 +130,27 @@ const Dashboard = () => {
             </div>
           )}
         </div>
+
+        {/* Screen Management Quick Access */}
+        {(hasRole('ADMIN') || hasRole('SCREEN_OWNER')) && (
+          <div className="quick-actions-section">
+            <h3>Screen Management</h3>
+            <div className="quick-actions">
+              <button
+                onClick={() => navigate('/screens')}
+                className="btn btn-primary"
+              >
+                View All Screens
+              </button>
+              <button
+                onClick={() => navigate('/screens/add')}
+                className="btn btn-secondary"
+              >
+                + Add New Screen
+              </button>
+            </div>
+          </div>
+        )}
 
         <div className="role-specific-sections">
           {hasRole('ADMIN') && (

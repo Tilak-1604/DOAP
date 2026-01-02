@@ -2,7 +2,10 @@ import React, { createContext, useState, useEffect, useContext } from 'react';
 import { authAPI } from '../services/api';
 
 const AuthContext = createContext();
-
+//this is for the useAuth hook 
+// it returns the context of the AuthContext
+// if the context is not found, it throws an error
+// if the context is found, it returns the context
 export const useAuth = () => {
   const context = useContext(AuthContext);
   if (!context) {
@@ -11,12 +14,19 @@ export const useAuth = () => {
   return context;
 };
 
+//this is for the AuthProvider component
+// it provides the context to the children components
+// it initializes the auth state from the local storage
+// it sets the user state
+// it sets the isAuthenticated state
+// it sets the loading state
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
 
   // Initialize auth state from localStorage
+  //With this:Refresh keeps you logged in ✅
   useEffect(() => {
     const token = localStorage.getItem('token');
     const userData = localStorage.getItem('user');

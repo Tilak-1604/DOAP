@@ -13,18 +13,34 @@ const Login = () => {
   const { login, googleLogin } = useAuth();
   const navigate = useNavigate();
 
+  // Clear error only when user starts typing in email or password
+  const handleEmailChange = (e) => { // this is for the email input field
+    setEmail(e.target.value);
+    if (error) {
+      setError(''); // Clear error when user starts typing
+    }
+  };
+
+  const handlePasswordChange = (e) => {
+    setPassword(e.target.value);
+    if (error) {
+      setError(''); // Clear error when user starts typing
+    }
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setError('');
+    // Don't clear error here - let it persist until user types
     setLoading(true);
 
     try {
       const result = await login(email, password);
 
       if (result.success) {
+        setError(''); // Clear error on success
         navigate('/dashboard');
       } else {
-        // Show user-friendly error message
+        // Show user-friendly error message - will persist until user types
         const errorMessage = result.error || 'Invalid email or password';
         setError(errorMessage);
       }
@@ -38,7 +54,6 @@ const Login = () => {
 
   // Google Sign-In success handler
   const handleGoogleSuccess = async (credentialResponse) => {
-    setError('');
     setLoading(true);
     
     try {
@@ -52,9 +67,11 @@ const Login = () => {
       const result = await googleLogin(credentialResponse.credential);
       
       if (result.success) {
+        setError(''); // Clear error on success
         navigate('/dashboard');
       } else {
-        setError(result.error);
+        // Error will persist until user types or tries again
+        setError(result.error || 'Google login failed. Please try again.');
       }
     } catch (err) {
       console.error('Google login error:', err);
@@ -84,7 +101,7 @@ const Login = () => {
               type="email"
               id="email"
               value={email}
-              onChange={(e) => setEmail(e.target.value)}
+              onChange={handleEmailChange}
               required
               placeholder="Enter your email"
             />
@@ -96,7 +113,7 @@ const Login = () => {
               type="password"
               id="password"
               value={password}
-              onChange={(e) => setPassword(e.target.value)}
+              onChange={handlePasswordChange}
               required
               placeholder="Enter your password"
             />

@@ -1,3 +1,11 @@
+
+
+// This file is the single communication layer between:
+
+// 👉 Frontend (React UI)
+// 👉 Backend (Spring Boot APIs)
+
+
 import axios from 'axios';
 
 const API_BASE_URL = 'http://localhost:8080';
@@ -10,7 +18,9 @@ const api = axios.create({
   },
 });
 
-// Request interceptor to add token to headers badhi api call pela chalshe auto attached jwt token
+// Request interceptor to add token to headers
+// before sending the request to the backend, we add the token to the headers
+// so that the backend can authenticate the request
 api.interceptors.request.use(
   (config) => {
     const token = localStorage.getItem('token');
@@ -20,11 +30,14 @@ api.interceptors.request.use(
     return config;
   },
   (error) => {
+    // if the request is rejected, we return the error
     return Promise.reject(error);
   }
 );
 
 // Response interceptor to handle token expiration
+// if the response is rejected, we return the error
+// if the response is rejected because the token is expired or invalid, we remove the token from the local storage and redirect to the login page
 api.interceptors.response.use(
   (response) => response,
   (error) => {
@@ -95,6 +108,27 @@ export const testAPI = {
 
   getPublic: async () => {
     const response = await api.get('/test/public');
+    return response.data;
+  },
+};
+
+// Screen API
+export const screenAPI = {
+  // Get all screens (ADMIN sees all, SCREEN_OWNER sees only their own)
+  getAllScreens: async () => {
+    const response = await api.get('/api/screens');
+    return response.data;
+  },
+
+  // Add new screen
+  addScreen: async (screenData) => {
+    const response = await api.post('/api/screens', screenData);
+    return response.data;
+  },
+
+  // Approve screen (ADMIN only)
+  approveScreen: async (screenId, status) => {
+    const response = await api.put(`/api/screens/${screenId}/approval`, { status });
     return response.data;
   },
 };

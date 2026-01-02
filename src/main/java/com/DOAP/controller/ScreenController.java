@@ -1,0 +1,85 @@
+package com.DOAP.controller;
+
+import com.DOAP.dto.ScreenApprovalRequest;
+import com.DOAP.dto.ScreenRequest;
+import com.DOAP.dto.ScreenResponse;
+import com.DOAP.entity.User;
+import com.DOAP.service.ScreenService;
+import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+
+@RestController
+@RequestMapping("/api/screens")
+@RequiredArgsConstructor
+public class ScreenController {
+
+    private final ScreenService screenService;
+
+    @PostMapping
+    @PreAuthorize("hasAnyRole('ADMIN', 'SCREEN_OWNER')")
+    public ResponseEntity<ScreenResponse> addScreen(
+            @Valid @RequestBody ScreenRequest request,
+            Authentication authentication) {
+
+        User user = (User) authentication.getPrincipal();
+
+        // Extract role string (ADMIN or SCREEN_OWNER)
+        String role = authentication.getAuthorities().stream()
+                .map(grantedAuthority -> grantedAuthority.getAuthority().replace("ROLE_", ""))
+                .filter(r -> "ADMIN".equals(r) || "SCREEN_OWNER".equals(r))
+                .findFirst()
+                .orElse("SCREEN_OWNER"); // Default fallback if needed
+
+        ScreenResponse response = screenService.addScreen(
+                request,
+                user.getId(),
+                role);
+
+        return ResponseEntity.ok(response);
+    }
+
+    @GetMapping
+    @PreAuthorize("hasAnyRole('ADMIN', 'SCREEN_OWNER')")
+    public ResponseEntity<List<ScreenResponse>> getAllScreens(
+            Authentication authentication) {
+
+        User user = (User) authentication.getPrincipal();
+
+        // Extract role string
+        String role = authentication.getAuthorities().stream()
+                .map(grantedAuthority -> grantedAuthority.getAuthority().replace("ROLE_", ""))
+                .filter(r -> "ADMIN".equals(r) || "SCREEN_OWNER".equals(r))
+                .findFirst()
+                .orElse("SCREEN_OWNER");
+
+        List<ScreenResponse> screens = screenService.getAllScreens(user.getId(), role);
+        return ResponseEntity.ok(screens);
+    }
+
+    @PutMapping("/{id}/approval")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<ScreenResponse> approveScreen(
+            @PathVariable Long id,
+            @Valid @RequestBody ScreenApprovalRequest request,
+            Authentication authentication) {
+
+        User admin = (User) authentication.getPrincipal();
+
+        // We know it is ADMIN due to @PreAuthorize
+        String role = "ADMIN";
+
+        ScreenResponse response = screenService.approveScreen(
+                id,
+                request,
+                admin.getId(),
+                role);
+
+        return ResponseEntity.ok(response);
+    }
+}
