@@ -36,3 +36,4 @@ application-local.properties
 application-dev.properties
 *.key
 *.json
+node_modules/
