@@ -1,6 +1,5 @@
 package com.DOAP.config;
 
-
 import com.DOAP.entity.Role;
 import com.DOAP.repository.RoleRepository;
 import org.springframework.boot.CommandLineRunner;
