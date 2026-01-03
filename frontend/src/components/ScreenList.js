@@ -9,7 +9,8 @@ const ScreenList = () => {
   const [screens, setScreens] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
-  const { user, hasRole } = useAuth();
+
+  const { hasRole } = useAuth();
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -34,7 +35,6 @@ const ScreenList = () => {
   };
 
   const handleApprovalSuccess = () => {
-    // Refresh the list after approval/rejection
     loadScreens();
   };
 
@@ -63,6 +63,7 @@ const ScreenList = () => {
 
   return (
     <div className="screen-list-container">
+      {/* Header */}
       <div className="screen-list-header">
         <h2>Screen Management</h2>
         {(hasRole('ADMIN') || hasRole('SCREEN_OWNER')) && (
@@ -77,6 +78,7 @@ const ScreenList = () => {
 
       {error && <div className="error-message">{error}</div>}
 
+      {/* Role info */}
       {hasRole('ADMIN') && (
         <div className="admin-info">
           <p>You are viewing <strong>all screens</strong> in the system.</p>
@@ -89,6 +91,7 @@ const ScreenList = () => {
         </div>
       )}
 
+      {/* Empty state */}
       {screens.length === 0 ? (
         <div className="empty-state">
           <p>No screens found.</p>
@@ -105,6 +108,7 @@ const ScreenList = () => {
         <div className="screens-grid">
           {screens.map((screen) => (
             <div key={screen.id} className="screen-card">
+              {/* Card Header */}
               <div className="screen-card-header">
                 <h3>{screen.screenName}</h3>
                 <span className={`status-badge ${getStatusBadgeClass(screen.status)}`}>
@@ -112,32 +116,47 @@ const ScreenList = () => {
                 </span>
               </div>
 
+              {/* Card Body */}
               <div className="screen-card-body">
                 <div className="screen-info-item">
                   <strong>Location:</strong>
-                  <p>{screen.location}</p>
+                  <p>{screen.city}, {screen.country}</p>
+                  <small style={{ color: '#777' }}>{screen.address} - {screen.pincode}</small>
+                </div>
+
+                <div style={{ display: 'flex', gap: '15px', marginTop: '10px' }}>
+                  <div className="screen-info-item">
+                    <strong>Type:</strong>
+                    <p>{screen.screenType}</p>
+                  </div>
+
+                  <div className="screen-info-item">
+                    <strong>Orientation:</strong>
+                    <p>{screen.orientation}</p>
+                  </div>
+                </div>
+
+                <div className="screen-info-item">
+                  <strong>Resolution:</strong>
+                  <p>
+                    {screen.resolutionWidth} × {screen.resolutionHeight}px
+                  </p>
+                </div>
+
+                <div className="screen-info-item">
+                  <strong>Hours:</strong>
+                  <p>{screen.activeFrom} - {screen.activeTo}</p>
                 </div>
 
                 {screen.description && (
-                  <div className="screen-info-item">
+                  <div className="screen-info-item" style={{ marginTop: '10px' }}>
                     <strong>Description:</strong>
                     <p>{screen.description}</p>
                   </div>
                 )}
-
-                {hasRole('ADMIN') && (
-                  <div className="screen-info-item">
-                    <strong>Owner Role:</strong>
-                    <p>{screen.ownerRole}</p>
-                  </div>
-                )}
-
-                <div className="screen-info-item">
-                  <strong>Created:</strong>
-                  <p>{new Date(screen.createdAt).toLocaleDateString()}</p>
-                </div>
               </div>
 
+              {/* Admin Approval */}
               {hasRole('ADMIN') && screen.status === 'INACTIVE' && (
                 <div className="screen-card-footer">
                   <ApprovalButtons
@@ -155,4 +174,3 @@ const ScreenList = () => {
 };
 
 export default ScreenList;
-

@@ -33,8 +33,26 @@ public class ScreenServiceImpl implements ScreenService {
 
         Screen screen = Screen.builder()
                 .screenName(request.getScreenName())
-                .location(request.getLocation())
                 .description(request.getDescription())
+                // Location mappings
+                .location(constructLocationString(request)) // Composite string for legacy compat
+                .address(request.getAddress())
+                .city(request.getCity())
+                .state(request.getState())
+                .country(request.getCountry())
+                .pincode(request.getPincode())
+                .latitude(request.getLatitude())
+                .longitude(request.getLongitude())
+                // Tech mappings
+                .screenType(request.getScreenType())
+                .orientation(request.getOrientation())
+                .screenWidth(request.getScreenWidth())
+                .screenHeight(request.getScreenHeight())
+                .resolutionWidth(request.getResolutionWidth())
+                .resolutionHeight(request.getResolutionHeight())
+                .activeFrom(request.getActiveFrom())
+                .activeTo(request.getActiveTo())
+                // Ownership
                 .ownerId(userId)
                 .ownerRole(role)
                 .status(ScreenStatus.INACTIVE) // Pending admin approval
@@ -98,13 +116,43 @@ public class ScreenServiceImpl implements ScreenService {
         return ScreenResponse.builder()
                 .id(screen.getId())
                 .screenName(screen.getScreenName())
-                .location(screen.getLocation())
                 .description(screen.getDescription())
+                // Location
+                .location(screen.getLocation())
+                .address(screen.getAddress())
+                .city(screen.getCity())
+                .state(screen.getState())
+                .country(screen.getCountry())
+                .pincode(screen.getPincode())
+                .latitude(screen.getLatitude())
+                .longitude(screen.getLongitude())
+                // Tech
+                .screenType(screen.getScreenType())
+                .orientation(screen.getOrientation())
+                .screenWidth(screen.getScreenWidth())
+                .screenHeight(screen.getScreenHeight())
+                .resolutionWidth(screen.getResolutionWidth())
+                .resolutionHeight(screen.getResolutionHeight())
+                .activeFrom(screen.getActiveFrom())
+                .activeTo(screen.getActiveTo())
+                // Meta
                 .ownerId(screen.getOwnerId())
                 .ownerRole(screen.getOwnerRole())
                 .status(screen.getStatus())
                 .createdAt(screen.getCreatedAt())
                 .updatedAt(screen.getUpdatedAt())
                 .build();
+    }
+
+    private String constructLocationString(ScreenRequest request) {
+        // Helper to create a single string for legacy "location" field
+        StringBuilder sb = new StringBuilder();
+        if (request.getAddress() != null)
+            sb.append(request.getAddress());
+        if (request.getCity() != null)
+            sb.append(", ").append(request.getCity());
+        if (request.getPincode() != null)
+            sb.append(" - ").append(request.getPincode());
+        return sb.toString();
     }
 }

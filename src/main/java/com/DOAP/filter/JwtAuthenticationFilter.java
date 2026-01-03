@@ -26,9 +26,11 @@ import java.util.stream.Collectors;
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     private final JwtService jwtService;
+    private final com.DOAP.repository.UserRepository userRepository;
 
-    public JwtAuthenticationFilter(JwtService jwtService) {
+    public JwtAuthenticationFilter(JwtService jwtService, com.DOAP.repository.UserRepository userRepository) {
         this.jwtService = jwtService;
+        this.userRepository = userRepository;
     }
 
     @Override
@@ -36,34 +38,43 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                                     HttpServletResponse response,
                                     FilterChain filterChain) throws ServletException, IOException {
 
-        String authHeader = request.getHeader("Authorization"); // get the authorization header from the request because the token is sent in the authorization header
+        String authHeader = request.getHeader("Authorization"); // get the authorization header from the request because
+        // the token is sent in the authorization header
 
         // Check if Authorization header exists and starts with "Bearer "
-        if (authHeader != null && authHeader.startsWith("Bearer ")) { // if the authorization header exists and starts with "Bearer "
-            String token = authHeader.substring(7); // Remove "Bearer " prefix and get the token means the token is sent in the authorization header and we need to remove the "Bearer " prefix to get the token
+        if (authHeader != null && authHeader.startsWith("Bearer ")) { // if the authorization header exists and starts
+            // with "Bearer "
+            String token = authHeader.substring(7); // Remove "Bearer " prefix and get the token means the token is sent
+            // in the authorization header and we need to remove the "Bearer "
+            // prefix to get the token
 
             try {
                 // Validate token means check if the token is valid
                 if (jwtService.validateToken(token)) {
-                    // Extract username and roles from token
+                    // Extract username (email) and roles from token
                     String username = jwtService.extractUsername(token);
                     List<String> roles = jwtService.extractRoles(token);
 
-                    // Convert roles to GrantedAuthority with ROLE_ prefix
-                    // Spring Security expects roles to have ROLE_ prefix for hasRole() checks
-                    List<SimpleGrantedAuthority> authorities = roles.stream()
-                            .map(role -> new SimpleGrantedAuthority("ROLE_" + role))
-                            .collect(Collectors.toList());
+                    // Load User entity to set as Principal (Important for Controller casting)
+                    com.DOAP.entity.User user = userRepository.findByEmail(username).orElse(null);
 
-                    // Create Authentication object
-                    Authentication authentication = new UsernamePasswordAuthenticationToken(
-                            username,
-                            null,
-                            authorities
-                    );
+                    if (user != null) {
+                        System.out.println("DEBUG: User found in DB: " + user.getEmail() + " | Type: "
+                                + user.getClass().getName());
+                        // Convert roles to GrantedAuthority with ROLE_ prefix
+                        List<SimpleGrantedAuthority> authorities = roles.stream()
+                                .map(role -> new SimpleGrantedAuthority("ROLE_" + role))
+                                .collect(Collectors.toList());
 
-                    // Set authentication in SecurityContext
-                    SecurityContextHolder.getContext().setAuthentication(authentication);
+                        // Create Authentication object with User entity as principal
+                        Authentication authentication = new UsernamePasswordAuthenticationToken(
+                                user, // Principal is now the User object
+                                null,
+                                authorities);
+
+                        // Set authentication in SecurityContext
+                        SecurityContextHolder.getContext().setAuthentication(authentication);
+                    }
                 }
             } catch (Exception e) {
                 // Invalid token - clear security context
@@ -75,4 +86,3 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         filterChain.doFilter(request, response);
     }
 }
-

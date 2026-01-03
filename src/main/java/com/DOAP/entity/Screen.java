@@ -10,6 +10,7 @@ import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 
 @Entity
 @Table(name = "screens")
@@ -41,6 +42,33 @@ public class Screen {
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private ScreenStatus status;
+
+    // --- New Phase 2 Fields ---
+
+    // Location Details
+    private String city;
+    private String address;
+    private String state;
+    private String country;
+    private String pincode;
+
+    private Double latitude;
+    private Double longitude;
+
+    // Technical Specs
+    @Enumerated(EnumType.STRING)
+    private com.DOAP.entity.enums.ScreenType screenType;
+
+    @Enumerated(EnumType.STRING)
+    private com.DOAP.entity.enums.ScreenOrientation orientation;
+
+    private Integer screenWidth;
+    private Integer screenHeight;
+    private Integer resolutionWidth;
+    private Integer resolutionHeight;
+
+    private LocalTime activeFrom;
+    private LocalTime activeTo;
 
     private Long approvedBy; // Admin User ID
 

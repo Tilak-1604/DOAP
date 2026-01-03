@@ -20,6 +20,20 @@ import java.util.List;
 public class ScreenController {
 
     private final ScreenService screenService;
+    private final com.DOAP.repository.UserRepository userRepository;
+
+    private User getUser(Authentication authentication) {
+        Object principal = authentication.getPrincipal();
+        if (principal instanceof User) {
+            return (User) principal;
+        } else if (principal instanceof String) {
+            String email = (String) principal;
+            return userRepository.findByEmail(email)
+                    .orElseThrow(() -> new RuntimeException("User not found for email: " + email));
+        } else {
+            throw new RuntimeException("Unknown principal type: " + principal.getClass().getName());
+        }
+    }
 
     @PostMapping
     @PreAuthorize("hasAnyRole('ADMIN', 'SCREEN_OWNER')")
@@ -27,7 +41,7 @@ public class ScreenController {
             @Valid @RequestBody ScreenRequest request,
             Authentication authentication) {
 
-        User user = (User) authentication.getPrincipal();
+        User user = getUser(authentication);
 
         // Extract role string (ADMIN or SCREEN_OWNER)
         String role = authentication.getAuthorities().stream()
@@ -49,7 +63,7 @@ public class ScreenController {
     public ResponseEntity<List<ScreenResponse>> getAllScreens(
             Authentication authentication) {
 
-        User user = (User) authentication.getPrincipal();
+        User user = getUser(authentication);
 
         // Extract role string
         String role = authentication.getAuthorities().stream()
@@ -69,7 +83,7 @@ public class ScreenController {
             @Valid @RequestBody ScreenApprovalRequest request,
             Authentication authentication) {
 
-        User admin = (User) authentication.getPrincipal();
+        User admin = getUser(authentication);
 
         // We know it is ADMIN due to @PreAuthorize
         String role = "ADMIN";
