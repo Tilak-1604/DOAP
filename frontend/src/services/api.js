@@ -41,7 +41,7 @@ api.interceptors.request.use(
 api.interceptors.response.use(
   (response) => response,
   (error) => {
-    if (error.response?.status === 401) {
+    if (error.response?.status === 401 || error.response?.status === 403) {
       // Token expired or invalid
       localStorage.removeItem('token');
       localStorage.removeItem('user');
@@ -129,6 +129,12 @@ export const screenAPI = {
   // Approve screen (ADMIN only)
   approveScreen: async (screenId, status) => {
     const response = await api.put(`/api/screens/${screenId}/approval`, { status });
+    return response.data;
+  },
+
+  // Get single screen by ID
+  getScreenById: async (screenId) => {
+    const response = await api.get(`/api/screens/${screenId}`);
     return response.data;
   },
 };

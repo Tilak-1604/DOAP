@@ -28,6 +28,7 @@ public class ScreenResponse {
     private String state;
     private String country;
     private String pincode;
+    private String category; // e.g. Mall, Shop
     private String location; // Legacy/Composite
     private Double latitude;
     private Double longitude;

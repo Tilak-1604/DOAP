@@ -8,6 +8,7 @@ import Register from './components/Register';
 import Dashboard from './components/Dashboard';
 import ScreenList from './components/ScreenList';
 import AddScreen from './components/AddScreen';
+import ScreenDetail from './components/ScreenDetail';
 import './App.css';
 
 // Google OAuth Client ID - Replace with your actual Client ID from Google Cloud Console
@@ -18,86 +19,96 @@ function App() {
     <GoogleOAuthProvider clientId={GOOGLE_CLIENT_ID}>
       <AuthProvider>
         <Router>
-        <div className="App">
-          <Routes>
-            {/* Public Routes */}
-            <Route path="/login" element={<Login />} />
-            <Route path="/register" element={<Register />} />
-            
-            {/* Protected Routes */}
-            <Route
-              path="/dashboard"
-              element={
-                <ProtectedRoute>
-                  <Dashboard />
-                </ProtectedRoute>
-              }
-            />
-            
-            {/* Admin Only Route Example */}
-            <Route
-              path="/admin"
-              element={
-                <ProtectedRoute requiredRoles={['ADMIN']}>
-                  <div className="admin-page">
-                    <h1>Admin Panel</h1>
-                    <p>This page is only accessible to ADMIN users.</p>
-                  </div>
-                </ProtectedRoute>
-              }
-            />
-            
-            {/* Screen Owner Only Route Example */}
-            <Route
-              path="/owner"
-              element={
-                <ProtectedRoute requiredRoles={['SCREEN_OWNER']}>
-                  <div className="owner-page">
-                    <h1>Screen Owner Panel</h1>
-                    <p>This page is only accessible to SCREEN_OWNER users.</p>
-                  </div>
-                </ProtectedRoute>
-              }
-            />
-            
-            {/* Advertiser Only Route Example */}
-            <Route
-              path="/advertiser"
-              element={
-                <ProtectedRoute requiredRoles={['ADVERTISER']}>
-                  <div className="advertiser-page">
-                    <h1>Advertiser Panel</h1>
-                    <p>This page is only accessible to ADVERTISER users.</p>
-                  </div>
-                </ProtectedRoute>
-              }
-            />
-            
-            {/* Screen Management Routes */}
-            <Route
-              path="/screens"
-              element={
-                <ProtectedRoute requiredRoles={['ADMIN', 'SCREEN_OWNER']}>
-                  <ScreenList />
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="/screens/add"
-              element={
-                <ProtectedRoute requiredRoles={['ADMIN', 'SCREEN_OWNER']}>
-                  <AddScreen />
-                </ProtectedRoute>
-              }
-            />
-            
-            {/* Default redirect */}
-            <Route path="/" element={<Navigate to="/dashboard" replace />} />
-            <Route path="*" element={<Navigate to="/dashboard" replace />} />
-          </Routes>
-        </div>
-      </Router>
-    </AuthProvider>
+          <div className="App">
+            <Routes>
+              {/* Public Routes */}
+              <Route path="/login" element={<Login />} />
+              <Route path="/register" element={<Register />} />
+
+              {/* Protected Routes */}
+              <Route
+                path="/dashboard"
+                element={
+                  <ProtectedRoute>
+                    <Dashboard />
+                  </ProtectedRoute>
+                }
+              />
+
+              {/* Admin Only Route Example */}
+              <Route
+                path="/admin"
+                element={
+                  <ProtectedRoute requiredRoles={['ADMIN']}>
+                    <div className="admin-page">
+                      <h1>Admin Panel</h1>
+                      <p>This page is only accessible to ADMIN users.</p>
+                    </div>
+                  </ProtectedRoute>
+                }
+              />
+
+              {/* Screen Owner Only Route Example */}
+              <Route
+                path="/owner"
+                element={
+                  <ProtectedRoute requiredRoles={['SCREEN_OWNER']}>
+                    <div className="owner-page">
+                      <h1>Screen Owner Panel</h1>
+                      <p>This page is only accessible to SCREEN_OWNER users.</p>
+                    </div>
+                  </ProtectedRoute>
+                }
+              />
+
+              {/* Advertiser Only Route Example */}
+              <Route
+                path="/advertiser"
+                element={
+                  <ProtectedRoute requiredRoles={['ADVERTISER']}>
+                    <div className="advertiser-page">
+                      <h1>Advertiser Panel</h1>
+                      <p>This page is only accessible to ADVERTISER users.</p>
+                    </div>
+                  </ProtectedRoute>
+                }
+              />
+
+              {/* Screen Management Routes */}
+              <Route
+                path="/screens"
+                element={
+                  <ProtectedRoute requiredRoles={['ADMIN', 'SCREEN_OWNER', 'ADVERTISER']}>
+                    <ScreenList />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/screens/add"
+                element={
+                  <ProtectedRoute requiredRoles={['ADMIN', 'SCREEN_OWNER']}>
+                    <AddScreen />
+                  </ProtectedRoute>
+                }
+              />
+
+              {/* Screen Details Route */}
+              <Route
+                path="/screens/:id"
+                element={
+                  <ProtectedRoute requiredRoles={['ADMIN', 'SCREEN_OWNER', 'ADVERTISER']}>
+                    <ScreenDetail />
+                  </ProtectedRoute>
+                }
+              />
+
+              {/* Default redirect */}
+              <Route path="/" element={<Navigate to="/dashboard" replace />} />
+              <Route path="*" element={<Navigate to="/dashboard" replace />} />
+            </Routes>
+          </div>
+        </Router>
+      </AuthProvider>
     </GoogleOAuthProvider>
   );
 }

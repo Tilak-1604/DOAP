@@ -59,7 +59,7 @@ public class ScreenController {
     }
 
     @GetMapping
-    @PreAuthorize("hasAnyRole('ADMIN', 'SCREEN_OWNER')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'SCREEN_OWNER', 'ADVERTISER')")
     public ResponseEntity<List<ScreenResponse>> getAllScreens(
             Authentication authentication) {
 
@@ -68,12 +68,28 @@ public class ScreenController {
         // Extract role string
         String role = authentication.getAuthorities().stream()
                 .map(grantedAuthority -> grantedAuthority.getAuthority().replace("ROLE_", ""))
-                .filter(r -> "ADMIN".equals(r) || "SCREEN_OWNER".equals(r))
+                .filter(r -> "ADMIN".equals(r) || "SCREEN_OWNER".equals(r) || "ADVERTISER".equals(r))
                 .findFirst()
-                .orElse("SCREEN_OWNER");
+                .orElse("ADVERTISER");
 
         List<ScreenResponse> screens = screenService.getAllScreens(user.getId(), role);
         return ResponseEntity.ok(screens);
+    }
+
+    @GetMapping("/{id}")
+    @PreAuthorize("hasAnyRole('ADMIN', 'SCREEN_OWNER', 'ADVERTISER')")
+    public ResponseEntity<ScreenResponse> getScreenById(
+            @PathVariable Long id,
+            Authentication authentication) {
+
+        User user = getUser(authentication);
+        String role = authentication.getAuthorities().stream()
+                .map(grantedAuthority -> grantedAuthority.getAuthority().replace("ROLE_", ""))
+                .findFirst()
+                .orElse("ADVERTISER");
+
+        ScreenResponse response = screenService.getScreenById(id, user.getId(), role);
+        return ResponseEntity.ok(response);
     }
 
     @PutMapping("/{id}/approval")

@@ -38,6 +38,9 @@ public class ScreenRequest {
     @NotBlank(message = "Pincode is required")
     private String pincode;
 
+    @NotBlank(message = "Category is required")
+    private String category;
+
     private Double latitude;
     private Double longitude;
 

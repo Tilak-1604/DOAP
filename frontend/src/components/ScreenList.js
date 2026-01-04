@@ -10,8 +10,17 @@ const ScreenList = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
 
-  const { hasRole } = useAuth();
+  const { hasRole, logout } = useAuth();
   const navigate = useNavigate();
+
+  const handleLogout = async () => {
+    await logout();
+    navigate('/login');
+  };
+
+  // Filters State
+  const [filterCity, setFilterCity] = useState('');
+  const [filterCategory, setFilterCategory] = useState('');
 
   useEffect(() => {
     loadScreens();
@@ -33,6 +42,19 @@ const ScreenList = () => {
       setLoading(false);
     }
   };
+
+  // Filter logic
+  const filteredScreens = screens.filter(screen => {
+    // Backend already filters by status/role, this is for UI search filters
+    const matchesCity = filterCity === '' ||
+      (screen.city && screen.city.toLowerCase().includes(filterCity.toLowerCase())) ||
+      (screen.pincode && screen.pincode.includes(filterCity));
+
+    const matchesCategory = filterCategory === '' ||
+      (screen.category && screen.category === filterCategory);
+
+    return matchesCity && matchesCategory;
+  });
 
   const handleApprovalSuccess = () => {
     loadScreens();
@@ -65,7 +87,7 @@ const ScreenList = () => {
     <div className="screen-list-container">
       {/* Header */}
       <div className="screen-list-header">
-        <h2>Screen Management</h2>
+        <h2>{hasRole('ADVERTISER') ? 'Discover Screens' : 'Screen Management'}</h2>
         {(hasRole('ADMIN') || hasRole('SCREEN_OWNER')) && (
           <button
             onClick={() => navigate('/screens/add')}
@@ -74,6 +96,41 @@ const ScreenList = () => {
             + Add New Screen
           </button>
         )}
+        {hasRole('ADVERTISER') && (
+          <button
+            onClick={handleLogout}
+            className="btn btn-danger"
+            style={{ marginLeft: 'auto' }}
+          >
+            Logout
+          </button>
+        )}
+      </div>
+
+      {/* Filters Bar */}
+      <div className="filters-bar" style={{ display: 'flex', gap: '15px', marginBottom: '20px' }}>
+        <input
+          placeholder="Search by City or PIN..."
+          value={filterCity}
+          onChange={(e) => setFilterCity(e.target.value)}
+          style={{ padding: '8px', flex: 1 }}
+        />
+        <select
+          value={filterCategory}
+          onChange={(e) => setFilterCategory(e.target.value)}
+          style={{ padding: '8px', flex: 1 }}
+        >
+          <option value="">All Categories</option>
+          <option value="Mall">Mall</option>
+          <option value="Shop">Shop</option>
+          <option value="Highway">Highway</option>
+          <option value="Airport">Airport</option>
+          <option value="Metro Station">Metro Station</option>
+          <option value="Bus Stand">Bus Stand</option>
+          <option value="Office Building">Office Building</option>
+          <option value="Hotel/Restaurant">Hotel/Restaurant</option>
+          <option value="Other">Other</option>
+        </select>
       </div>
 
       {error && <div className="error-message">{error}</div>}
@@ -92,7 +149,7 @@ const ScreenList = () => {
       )}
 
       {/* Empty state */}
-      {screens.length === 0 ? (
+      {filteredScreens.length === 0 ? (
         <div className="empty-state">
           <p>No screens found.</p>
           {(hasRole('ADMIN') || hasRole('SCREEN_OWNER')) && (
@@ -106,7 +163,7 @@ const ScreenList = () => {
         </div>
       ) : (
         <div className="screens-grid">
-          {screens.map((screen) => (
+          {filteredScreens.map((screen) => (
             <div key={screen.id} className="screen-card">
               {/* Card Header */}
               <div className="screen-card-header">
@@ -134,6 +191,11 @@ const ScreenList = () => {
                     <strong>Orientation:</strong>
                     <p>{screen.orientation}</p>
                   </div>
+
+                  <div className="screen-info-item">
+                    <strong>Catagory:</strong>
+                    <p>{screen.category}</p>
+                  </div>
                 </div>
 
                 <div className="screen-info-item">
@@ -155,6 +217,19 @@ const ScreenList = () => {
                   </div>
                 )}
               </div>
+
+              {/* View Details for Advertiser */}
+              {hasRole('ADVERTISER') && (
+                <div className="screen-card-footer">
+                  <button
+                    className="btn btn-primary"
+                    style={{ width: '100%' }}
+                    onClick={() => navigate(`/screens/${screen.id}`)}
+                  >
+                    View Details
+                  </button>
+                </div>
+              )}
 
               {/* Admin Approval */}
               {hasRole('ADMIN') && screen.status === 'INACTIVE' && (

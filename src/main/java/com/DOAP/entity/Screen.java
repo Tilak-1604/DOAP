@@ -43,6 +43,9 @@ public class Screen {
     @Column(nullable = false)
     private ScreenStatus status;
 
+    @Column(nullable = true)
+    private String category; // e.g., Mall, Shop, Highway
+
     // --- New Phase 2 Fields ---
 
     // Location Details

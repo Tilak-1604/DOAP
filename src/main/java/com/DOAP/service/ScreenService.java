@@ -14,8 +14,9 @@ public interface ScreenService {
             Long screenId,
             ScreenApprovalRequest request,
             Long adminId,
-            String role
-    );
+            String role);
 
     List<ScreenResponse> getAllScreens(Long userId, String role);
+
+    ScreenResponse getScreenById(Long screenId, Long userId, String role);
 }

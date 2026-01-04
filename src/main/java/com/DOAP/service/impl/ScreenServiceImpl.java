@@ -41,6 +41,7 @@ public class ScreenServiceImpl implements ScreenService {
                 .state(request.getState())
                 .country(request.getCountry())
                 .pincode(request.getPincode())
+                .category(request.getCategory())
                 .latitude(request.getLatitude())
                 .longitude(request.getLongitude())
                 // Tech mappings
@@ -103,6 +104,11 @@ public class ScreenServiceImpl implements ScreenService {
         } else if ("SCREEN_OWNER".equals(role)) {
             // Screen Owner can only see their own screens
             screens = screenRepository.findByOwnerId(userId);
+        } else if ("ADVERTISER".equals(role)) {
+            // Advertiser can only see ACTIVE screens
+            screens = screenRepository.findAll().stream()
+                    .filter(s -> s.getStatus() == ScreenStatus.ACTIVE)
+                    .collect(Collectors.toList());
         } else {
             throw new AccessDeniedException("You are not allowed to view screens");
         }
@@ -110,6 +116,25 @@ public class ScreenServiceImpl implements ScreenService {
         return screens.stream()
                 .map(this::mapToResponse)
                 .collect(Collectors.toList());
+    }
+
+    @Override
+    public ScreenResponse getScreenById(Long screenId, Long userId, String role) {
+        Screen screen = screenRepository.findById(screenId)
+                .orElseThrow(() -> new RuntimeException("Screen not found"));
+
+        if ("ADVERTISER".equals(role)) {
+            if (screen.getStatus() != ScreenStatus.ACTIVE) {
+                throw new AccessDeniedException("Screen is not active");
+            }
+        } else if ("SCREEN_OWNER".equals(role)) {
+            if (!screen.getOwnerId().equals(userId)) {
+                throw new AccessDeniedException("You do not own this screen");
+            }
+        }
+        // Admin can see everything
+
+        return mapToResponse(screen);
     }
 
     private ScreenResponse mapToResponse(Screen screen) {
@@ -124,6 +149,7 @@ public class ScreenServiceImpl implements ScreenService {
                 .state(screen.getState())
                 .country(screen.getCountry())
                 .pincode(screen.getPincode())
+                .category(screen.getCategory())
                 .latitude(screen.getLatitude())
                 .longitude(screen.getLongitude())
                 // Tech

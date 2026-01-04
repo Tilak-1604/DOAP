@@ -15,6 +15,12 @@ const Dashboard = () => {
     window.location.href = '/login';
   };
 
+  useEffect(() => {
+    if (hasRole('ADVERTISER')) {
+      navigate('/screens');
+    }
+  }, [user, navigate]);
+
   const testEndpoint = async (endpointName, apiCall) => {
     setLoading(true);
     try {
@@ -26,9 +32,9 @@ const Dashboard = () => {
     } catch (error) {
       setTestResults(prev => ({
         ...prev,
-        [endpointName]: { 
-          success: false, 
-          message: error.response?.data || 'Access denied' 
+        [endpointName]: {
+          success: false,
+          message: error.response?.data || 'Access denied'
         }
       }));
     }
