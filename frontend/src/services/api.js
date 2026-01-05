@@ -137,6 +137,18 @@ export const screenAPI = {
     const response = await api.get(`/api/screens/${screenId}`);
     return response.data;
   },
+
+  // Update screen details
+  updateScreen: async (screenId, screenData) => {
+    const response = await api.put(`/api/screens/${screenId}`, screenData);
+    return response.data;
+  },
+
+  // Update screen status
+  updateScreenStatus: async (screenId, status) => {
+    const response = await api.put(`/api/screens/${screenId}/status`, { status });
+    return response.data;
+  },
 };
 
 export default api;

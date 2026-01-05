@@ -9,6 +9,7 @@ import Dashboard from './components/Dashboard';
 import ScreenList from './components/ScreenList';
 import AddScreen from './components/AddScreen';
 import ScreenDetail from './components/ScreenDetail';
+import EditScreen from './components/EditScreen';
 import './App.css';
 
 // Google OAuth Client ID - Replace with your actual Client ID from Google Cloud Console
@@ -88,6 +89,14 @@ function App() {
                 element={
                   <ProtectedRoute requiredRoles={['ADMIN', 'SCREEN_OWNER']}>
                     <AddScreen />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/screens/edit/:id"
+                element={
+                  <ProtectedRoute requiredRoles={['ADMIN', 'SCREEN_OWNER']}>
+                    <EditScreen />
                   </ProtectedRoute>
                 }
               />

@@ -19,4 +19,9 @@ public interface ScreenService {
     List<ScreenResponse> getAllScreens(Long userId, String role);
 
     ScreenResponse getScreenById(Long screenId, Long userId, String role);
+
+    ScreenResponse updateScreen(Long screenId, ScreenRequest request, Long userId, String role);
+
+    ScreenResponse updateScreenStatus(Long screenId, com.DOAP.entity.enums.ScreenStatus status, Long userId,
+                                      String role);
 }

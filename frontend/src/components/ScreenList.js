@@ -168,9 +168,43 @@ const ScreenList = () => {
               {/* Card Header */}
               <div className="screen-card-header">
                 <h3>{screen.screenName}</h3>
-                <span className={`status-badge ${getStatusBadgeClass(screen.status)}`}>
-                  {screen.status}
-                </span>
+
+                {/* Status Control for Owners/Admins */}
+                {(hasRole('SCREEN_OWNER') || (hasRole('ADMIN') && screen.ownerRole === 'ADMIN')) ? (
+                  <div className="status-control" onClick={(e) => e.stopPropagation()}>
+                    <select
+                      value={screen.status}
+                      onChange={async (e) => {
+                        const newStatus = e.target.value;
+                        try {
+                          await screenAPI.updateScreenStatus(screen.id, newStatus);
+                          loadScreens(); // Refresh list
+                        } catch (err) {
+                          alert("Failed to update status");
+                        }
+                      }}
+                      className={`status-select ${getStatusBadgeClass(screen.status)}`}
+                      style={{
+                        padding: '5px',
+                        borderRadius: '4px',
+                        border: '1px solid #ddd',
+                        fontSize: '0.85rem',
+                        fontWeight: 'bold',
+                        cursor: 'pointer'
+                      }}
+                    >
+                      <option value="ACTIVE">ACTIVE</option>
+                      <option value="INACTIVE">INACTIVE</option>
+                      <option value="UNDER_MAINTENANCE">UNDER MAINTENANCE</option>
+                      {/* REJECTED is not selectable manually, but if screen is REJECTED, show it */}
+                      {screen.status === 'REJECTED' && <option value="REJECTED" disabled>REJECTED</option>}
+                    </select>
+                  </div>
+                ) : (
+                  <span className={`status-badge ${getStatusBadgeClass(screen.status)}`}>
+                    {screen.status.replace('_', ' ')}
+                  </span>
+                )}
               </div>
 
               {/* Card Body */}
@@ -193,7 +227,7 @@ const ScreenList = () => {
                   </div>
 
                   <div className="screen-info-item">
-                    <strong>Catagory:</strong>
+                    <strong>Category:</strong>
                     <p>{screen.category}</p>
                   </div>
                 </div>
@@ -231,8 +265,21 @@ const ScreenList = () => {
                 </div>
               )}
 
+              {/* Edit Button for Owner/Admin */}
+              {(hasRole('SCREEN_OWNER') || (hasRole('ADMIN') && screen.ownerRole === 'ADMIN')) && (
+                <div className="screen-card-footer" style={{ marginTop: '10px' }}>
+                  <button
+                    className="btn btn-secondary"
+                    style={{ width: '100%', fontSize: '0.9rem', padding: '8px' }}
+                    onClick={() => navigate(`/screens/edit/${screen.id}`)}
+                  >
+                    Edit Screen
+                  </button>
+                </div>
+              )}
+
               {/* Admin Approval */}
-              {hasRole('ADMIN') && screen.status === 'INACTIVE' && (
+              {hasRole('ADMIN') && screen.status === 'INACTIVE' && screen.ownerRole !== 'ADMIN' && (
                 <div className="screen-card-footer">
                   <ApprovalButtons
                     screenId={screen.id}

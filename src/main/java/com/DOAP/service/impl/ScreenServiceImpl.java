@@ -137,6 +137,75 @@ public class ScreenServiceImpl implements ScreenService {
         return mapToResponse(screen);
     }
 
+    @Override
+    @Transactional
+    public ScreenResponse updateScreen(Long screenId, ScreenRequest request, Long userId, String role) {
+        Screen screen = screenRepository.findById(screenId)
+                .orElseThrow(() -> new RuntimeException("Screen not found with ID: " + screenId));
+
+        // Ownership Check
+        validateOwnership(screen, userId, role);
+
+        // Update Editable Fields
+        if (request.getScreenName() != null)
+            screen.setScreenName(request.getScreenName());
+        if (request.getDescription() != null)
+            screen.setDescription(request.getDescription());
+        if (request.getAddress() != null)
+            screen.setAddress(request.getAddress());
+        if (request.getCategory() != null)
+            screen.setCategory(request.getCategory());
+
+        // Update Lat/Long if provided
+        if (request.getLatitude() != null)
+            screen.setLatitude(request.getLatitude());
+        if (request.getLongitude() != null)
+            screen.setLongitude(request.getLongitude());
+
+        // Reconstruct composite location string using NEW address and OLD city/pincode
+        // (Since City and Pincode are non-editable)
+        String newAddress = request.getAddress() != null ? request.getAddress() : screen.getAddress();
+        screen.setLocation(constructLocationWithComponents(newAddress, screen.getCity(), screen.getPincode()));
+
+        Screen savedScreen = screenRepository.save(screen);
+        return mapToResponse(savedScreen);
+    }
+
+    @Override
+    @Transactional
+    public ScreenResponse updateScreenStatus(Long screenId, ScreenStatus status, Long userId, String role) {
+        Screen screen = screenRepository.findById(screenId)
+                .orElseThrow(() -> new RuntimeException("Screen not found with ID: " + screenId));
+
+        // Ownership Check
+        validateOwnership(screen, userId, role);
+
+        // Validation: Cannot set REJECTED manually
+        if (status == ScreenStatus.REJECTED) {
+            throw new IllegalArgumentException(
+                    "Cannot manually set status to REJECTED. Only Admin can reject via approval flow.");
+        }
+
+        screen.setStatus(status);
+        Screen savedScreen = screenRepository.save(screen);
+        return mapToResponse(savedScreen);
+    }
+
+    private void validateOwnership(Screen screen, Long userId, String role) {
+        if ("SCREEN_OWNER".equals(role)) {
+            if (!screen.getOwnerId().equals(userId)) {
+                throw new AccessDeniedException("You can only edit your own screens");
+            }
+        } else if ("ADMIN".equals(role)) {
+            // Admin can edit only admin-owned screens
+            if (!"ADMIN".equals(screen.getOwnerRole())) {
+                throw new AccessDeniedException("Admin cannot edit Screen Owner's screens");
+            }
+        } else {
+            throw new AccessDeniedException("Unauthorized action");
+        }
+    }
+
     private ScreenResponse mapToResponse(Screen screen) {
         return ScreenResponse.builder()
                 .id(screen.getId())
@@ -171,14 +240,17 @@ public class ScreenServiceImpl implements ScreenService {
     }
 
     private String constructLocationString(ScreenRequest request) {
-        // Helper to create a single string for legacy "location" field
+        return constructLocationWithComponents(request.getAddress(), request.getCity(), request.getPincode());
+    }
+
+    private String constructLocationWithComponents(String address, String city, String pincode) {
         StringBuilder sb = new StringBuilder();
-        if (request.getAddress() != null)
-            sb.append(request.getAddress());
-        if (request.getCity() != null)
-            sb.append(", ").append(request.getCity());
-        if (request.getPincode() != null)
-            sb.append(" - ").append(request.getPincode());
+        if (address != null)
+            sb.append(address);
+        if (city != null)
+            sb.append(", ").append(city);
+        if (pincode != null)
+            sb.append(" - ").append(pincode);
         return sb.toString();
     }
 }

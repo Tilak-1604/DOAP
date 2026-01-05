@@ -112,4 +112,44 @@ public class ScreenController {
 
         return ResponseEntity.ok(response);
     }
+
+    @PutMapping("/{id}")
+    @PreAuthorize("hasAnyRole('ADMIN', 'SCREEN_OWNER')")
+    public ResponseEntity<ScreenResponse> updateScreen(
+            @PathVariable Long id,
+            @Valid @RequestBody ScreenRequest request,
+            Authentication authentication) {
+
+        User user = getUser(authentication);
+
+        // Extract role string (ADMIN or SCREEN_OWNER)
+        String role = authentication.getAuthorities().stream()
+                .map(grantedAuthority -> grantedAuthority.getAuthority().replace("ROLE_", ""))
+                .filter(r -> "ADMIN".equals(r) || "SCREEN_OWNER".equals(r))
+                .findFirst()
+                .orElse("SCREEN_OWNER");
+
+        ScreenResponse response = screenService.updateScreen(id, request, user.getId(), role);
+        return ResponseEntity.ok(response);
+    }
+
+    @PutMapping("/{id}/status")
+    @PreAuthorize("hasAnyRole('ADMIN', 'SCREEN_OWNER')")
+    public ResponseEntity<ScreenResponse> updateStatus(
+            @PathVariable Long id,
+            @Valid @RequestBody com.DOAP.dto.ScreenStatusRequest request,
+            Authentication authentication) {
+
+        User user = getUser(authentication);
+
+        // Extract role string (ADMIN or SCREEN_OWNER)
+        String role = authentication.getAuthorities().stream()
+                .map(grantedAuthority -> grantedAuthority.getAuthority().replace("ROLE_", ""))
+                .filter(r -> "ADMIN".equals(r) || "SCREEN_OWNER".equals(r))
+                .findFirst()
+                .orElse("SCREEN_OWNER");
+
+        ScreenResponse response = screenService.updateScreenStatus(id, request.getStatus(), user.getId(), role);
+        return ResponseEntity.ok(response);
+    }
 }
