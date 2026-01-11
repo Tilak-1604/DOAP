@@ -144,9 +144,22 @@ export const screenAPI = {
     return response.data;
   },
 
-  // Update screen status
   updateScreenStatus: async (screenId, status) => {
     const response = await api.put(`/api/screens/${screenId}/status`, { status });
+    return response.data;
+  },
+};
+
+// Content API
+export const contentAPI = {
+  uploadContent: async (file) => {
+    const formData = new FormData();
+    formData.append('file', file);
+    const response = await api.post('/api/content/upload', formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+    });
     return response.data;
   },
 };

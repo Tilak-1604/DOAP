@@ -47,6 +47,8 @@ public class ScreenResponse {
     private LocalTime activeTo;
 
     private Long ownerId;
+    private String ownerName;
+    private String ownerEmail;
     private String ownerRole;
     private ScreenStatus status;
     private LocalDateTime createdAt;

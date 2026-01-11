@@ -15,6 +15,11 @@ const Dashboard = () => {
     window.location.href = '/login';
   };
 
+  const onUploadSuccess = (result) => {
+    console.log("Upload Success:", result);
+    alert("Upload Successful!");
+  };
+
   useEffect(() => {
     if (hasRole('ADVERTISER')) {
       navigate('/screens');

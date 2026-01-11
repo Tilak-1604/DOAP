@@ -21,6 +21,7 @@ import java.util.stream.Collectors;
 public class ScreenServiceImpl implements ScreenService {
 
     private final ScreenRepository screenRepository;
+    private final com.DOAP.repository.UserRepository userRepository;
 
     @Override
     @Transactional
@@ -207,6 +208,17 @@ public class ScreenServiceImpl implements ScreenService {
     }
 
     private ScreenResponse mapToResponse(Screen screen) {
+        String ownerName = "Unknown";
+        String ownerEmail = "Unknown";
+
+        if (screen.getOwnerId() != null) {
+            com.DOAP.entity.User user = userRepository.findById(screen.getOwnerId()).orElse(null);
+            if (user != null) {
+                ownerName = user.getName();
+                ownerEmail = user.getEmail();
+            }
+        }
+
         return ScreenResponse.builder()
                 .id(screen.getId())
                 .screenName(screen.getScreenName())
@@ -232,6 +244,8 @@ public class ScreenServiceImpl implements ScreenService {
                 .activeTo(screen.getActiveTo())
                 // Meta
                 .ownerId(screen.getOwnerId())
+                .ownerName(ownerName)
+                .ownerEmail(ownerEmail)
                 .ownerRole(screen.getOwnerRole())
                 .status(screen.getStatus())
                 .createdAt(screen.getCreatedAt())

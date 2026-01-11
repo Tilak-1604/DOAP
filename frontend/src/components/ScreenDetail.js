@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { screenAPI } from '../services/api';
 import { useAuth } from '../context/AuthContext';
+import UploadComponent from './UploadComponent';
 // import './ScreenDetail.css'; // Add if needed
 
 const ScreenDetail = () => {
@@ -12,6 +13,7 @@ const ScreenDetail = () => {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState('');
     const [showAvailability, setShowAvailability] = useState(false);
+    const [showUploadModal, setShowUploadModal] = useState(false);
 
     useEffect(() => {
         loadScreenDetails();
@@ -156,15 +158,56 @@ const ScreenDetail = () => {
                             </div>
 
                             <div style={{ marginTop: '20px', textAlign: 'center' }}>
-                                <button className="btn btn-secondary" disabled style={{ cursor: 'not-allowed', opacity: 0.7 }}>
-                                    Booking Coming Soon
-                                </button>
+                                {/* Booking Flow Trigger */}
+                                {hasRole('ADVERTISER') && (
+                                    <>
+                                        <button
+                                            className="btn btn-primary"
+                                            onClick={() => setShowUploadModal(true)}
+                                            style={{ backgroundColor: '#28a745', borderColor: '#28a745' }}
+                                        >
+                                            Book Screen
+                                        </button>
+                                    </>
+                                )}
+                                {!hasRole('ADVERTISER') && (
+                                    <button className="btn btn-secondary" disabled style={{ cursor: 'not-allowed', opacity: 0.7 }}>
+                                        Booking (Advertisers Only)
+                                    </button>
+                                )}
                             </div>
                         </div>
                     )}
                 </div>
-
             </div>
+
+            {/* Mock Booking & Upload Modal */}
+            {showUploadModal && (
+                <div className="modal-overlay" style={{
+                    position: 'fixed', top: 0, left: 0, right: 0, bottom: 0,
+                    backgroundColor: 'rgba(0,0,0,0.5)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1000
+                }}>
+                    <div className="modal-content" style={{
+                        backgroundColor: 'white', padding: '30px', borderRadius: '8px', width: '500px', maxWidth: '90%'
+                    }}>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '20px' }}>
+                            <h3>Book Screen: {screen.screenName}</h3>
+                            <button onClick={() => setShowUploadModal(false)} style={{ border: 'none', background: 'none', fontSize: '20px', cursor: 'pointer' }}>&times;</button>
+                        </div>
+
+                        <p style={{ marginBottom: '20px', color: '#555' }}>
+                            Step 1: Upload your content for AI Validation.
+                        </p>
+
+                        <UploadComponent onUploadSuccess={(result) => {
+                            console.log("Upload Success:", result);
+                            alert("Content Approved! Proceeding to Payment (Simulated). Booking Confirmed.");
+                            setShowUploadModal(false);
+                            // Here we would normally navigate to Payment or Booking Confirmation
+                        }} />
+                    </div>
+                </div>
+            )}
         </div>
     );
 };
