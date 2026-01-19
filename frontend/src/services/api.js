@@ -164,5 +164,38 @@ export const contentAPI = {
   },
 };
 
-export default api;
+// Booking API
+export const bookingAPI = {
+  createBooking: async (bookingData) => {
+    const response = await api.post('/api/bookings', bookingData);
+    return response.data;
+  },
 
+  getMyBookings: async () => {
+    const response = await api.get('/api/bookings/advertiser');
+    return response.data;
+  },
+
+  getScreenBookings: async (screenId) => {
+    const response = await api.get(`/api/bookings/screen/${screenId}`);
+    return response.data;
+  },
+
+  getAvailability: async (screenId, date) => {
+    const response = await api.get(`/api/bookings/availability`, {
+      params: { screenId, date }
+    });
+    return response.data;
+  }
+};
+
+export const paymentAPI = {
+  pay: async (bookingId) => {
+    const response = await api.post(`/api/payments/pay`, null, {
+      params: { bookingId }
+    });
+    return response.data;
+  }
+};
+
+export default api;

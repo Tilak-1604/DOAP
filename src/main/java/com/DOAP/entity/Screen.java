@@ -46,6 +46,13 @@ public class Screen {
     @Column(nullable = true)
     private String category; // e.g., Mall, Shop, Highway
 
+    // --- Phase 2: Pricing & Earnings ---
+    @Column(nullable = false)
+    private Double pricePerHour = 500.0; // Default Advertiser Rate
+
+    @Column(nullable = false)
+    private Double ownerBaseRate = 300.0; // Default Owner Payout Rate
+
     // --- New Phase 2 Fields ---
 
     // Location Details
