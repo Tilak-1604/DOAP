@@ -17,7 +17,6 @@ const EditScreen = () => {
         screenName: '',
         description: '',
         address: '',
-        category: '',
     });
 
     useEffect(() => {
@@ -33,7 +32,6 @@ const EditScreen = () => {
                 screenName: data.screenName,
                 description: data.description,
                 address: data.address, // "Address" in DTO matches
-                category: data.category,
             });
         } catch (err) {
             setError('Failed to load screen details.');
@@ -113,20 +111,7 @@ const EditScreen = () => {
                             <div className="helper-text">You can update the street address or landmark. City/State/PIN cannot be changed.</div>
                         </div>
 
-                        <div className="form-group">
-                            <label>Category</label>
-                            <select name="category" value={formData.category} onChange={handleChange} required>
-                                <option value="Mall">Mall</option>
-                                <option value="Shop">Shop</option>
-                                <option value="Highway">Highway</option>
-                                <option value="Airport">Airport</option>
-                                <option value="Metro Station">Metro Station</option>
-                                <option value="Bus Stand">Bus Stand</option>
-                                <option value="Office Building">Office Building</option>
-                                <option value="Hotel/Restaurant">Hotel/Restaurant</option>
-                                <option value="Other">Other</option>
-                            </select>
-                        </div>
+
 
                         <div className="form-group">
                             <label>Description</label>

@@ -21,9 +21,7 @@ const Dashboard = () => {
   };
 
   useEffect(() => {
-    if (hasRole('ADVERTISER')) {
-      navigate('/screens');
-    }
+    // Removed auto-redirect for advertisers - they should use the dashboard
   }, [user, navigate]);
 
   const testEndpoint = async (endpointName, apiCall) => {
@@ -181,7 +179,22 @@ const Dashboard = () => {
           {hasRole('ADVERTISER') && (
             <div className="role-section advertiser-section">
               <h3>Advertiser Dashboard</h3>
-              <p>Browse available screens, create campaigns, and manage your advertisements.</p>
+              <p>Create your advertisement campaign and browse available screens.</p>
+              <div className="quick-actions" style={{ marginTop: '20px' }}>
+                <button
+                  onClick={() => navigate('/create-ad')}
+                  className="btn btn-primary"
+                  style={{ marginRight: '10px' }}
+                >
+                  🎯 Create New Advertisement
+                </button>
+                <button
+                  onClick={() => navigate('/screens')}
+                  className="btn btn-secondary"
+                >
+                  📺 Browse Screens
+                </button>
+              </div>
             </div>
           )}
 

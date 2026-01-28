@@ -1,0 +1,91 @@
+.ad-details-form-container {
+    max-width: 600px;
+    margin: 40px auto;
+    padding: 30px;
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+.ad-details-form-container h2 {
+    color: #2c3e50;
+    margin-bottom: 10px;
+    font-size: 24px;
+}
+
+.form-description {
+    color: #7f8c8d;
+    margin-bottom: 30px;
+    font-size: 14px;
+}
+
+.error-message {
+    background-color: #ffebee;
+    color: #c62828;
+    padding: 12px;
+    border-radius: 6px;
+    margin-bottom: 20px;
+    border-left: 4px solid #c62828;
+}
+
+.ad-details-form .form-group {
+    margin-bottom: 24px;
+}
+
+.ad-details-form label {
+    display: block;
+    margin-bottom: 8px;
+    color: #34495e;
+    font-weight: 600;
+    font-size: 14px;
+}
+
+.ad-details-form select,
+.ad-details-form textarea {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    font-size: 14px;
+    font-family: inherit;
+    transition: border-color 0.3s;
+}
+
+.ad-details-form select:focus,
+.ad-details-form textarea:focus {
+    outline: none;
+    border-color: #3498db;
+    box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.1);
+}
+
+.ad-details-form textarea {
+    resize: vertical;
+    min-height: 100px;
+}
+
+.form-actions {
+    margin-top: 30px;
+    display: flex;
+    justify-content: flex-end;
+}
+
+.submit-btn {
+    background-color: #3498db;
+    color: white;
+    padding: 12px 32px;
+    border: none;
+    border-radius: 6px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.submit-btn:hover:not(:disabled) {
+    background-color: #2980b9;
+}
+
+.submit-btn:disabled {
+    background-color: #bdc3c7;
+    cursor: not-allowed;
+}

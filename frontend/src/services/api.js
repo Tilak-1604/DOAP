@@ -24,8 +24,11 @@ const api = axios.create({
 api.interceptors.request.use(
   (config) => {
     const token = localStorage.getItem('token');
+    console.log('API Request:', config.url, 'Token exists:', !!token);
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
+    } else {
+      console.warn('No token found in localStorage');
     }
     return config;
   },
@@ -115,8 +118,8 @@ export const testAPI = {
 // Screen API
 export const screenAPI = {
   // Get all screens (ADMIN sees all, SCREEN_OWNER sees only their own)
-  getAllScreens: async () => {
-    const response = await api.get('/api/screens');
+  getAllScreens: async (params) => {
+    const response = await api.get('/api/screens', { params });
     return response.data;
   },
 
@@ -162,6 +165,11 @@ export const contentAPI = {
     });
     return response.data;
   },
+
+  getMyContent: async () => {
+    const response = await api.get('/api/content/my-content');
+    return response.data;
+  }
 };
 
 // Booking API
@@ -194,6 +202,27 @@ export const paymentAPI = {
     const response = await api.post(`/api/payments/pay`, null, {
       params: { bookingId }
     });
+    return response.data;
+  }
+};
+
+// Ad Details API
+export const adDetailsAPI = {
+  saveAdDetails: async (adDetailsData) => {
+    const response = await api.post('/api/ad-details', adDetailsData);
+    return response.data;
+  },
+
+  getDetailsByContentId: async (contentId) => {
+    const response = await api.get(`/api/ad-details/content/${contentId}`);
+    return response.data;
+  }
+};
+
+// Recommendation API
+export const recommendationAPI = {
+  getRecommendations: async (contentId) => {
+    const response = await api.get(`/api/recommendations/content/${contentId}`);
     return response.data;
   }
 };

@@ -1,6 +1,8 @@
 package com.DOAP.entity;
 
 import com.DOAP.entity.enums.ScreenStatus;
+import com.DOAP.entity.enums.FootfallCategory;
+import com.DOAP.entity.enums.VisibilityLevel;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -47,9 +49,12 @@ public class Screen {
     private String category; // e.g., Mall, Shop, Highway
 
     // --- Phase 2: Pricing & Earnings ---
+    // --- Phase 2: Pricing & Earnings ---
+    @Builder.Default
     @Column(nullable = false)
     private Double pricePerHour = 500.0; // Default Advertiser Rate
 
+    @Builder.Default
     @Column(nullable = false)
     private Double ownerBaseRate = 300.0; // Default Owner Payout Rate
 
@@ -64,6 +69,15 @@ public class Screen {
 
     private Double latitude;
     private Double longitude;
+
+    // Structured Location Details (New Fields)
+    @Enumerated(EnumType.STRING)
+    private FootfallCategory footfallCategory;
+
+    @Enumerated(EnumType.STRING)
+    private VisibilityLevel visibilityLevel;
+
+    private String zone; // e.g., North, South, Central
 
     // Technical Specs
     @Enumerated(EnumType.STRING)

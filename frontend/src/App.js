@@ -10,6 +10,7 @@ import ScreenList from './components/ScreenList';
 import AddScreen from './components/AddScreen';
 import ScreenDetail from './components/ScreenDetail';
 import EditScreen from './components/EditScreen';
+import AdvertiserWorkflow from './components/AdvertiserWorkflow';
 import './App.css';
 
 // Google OAuth Client ID - Replace with your actual Client ID from Google Cloud Console
@@ -97,6 +98,16 @@ function App() {
                 element={
                   <ProtectedRoute requiredRoles={['ADMIN', 'SCREEN_OWNER']}>
                     <EditScreen />
+                  </ProtectedRoute>
+                }
+              />
+
+              {/* Advertiser Workflow Route */}
+              <Route
+                path="/create-ad"
+                element={
+                  <ProtectedRoute requiredRoles={['ADVERTISER']}>
+                    <AdvertiserWorkflow />
                   </ProtectedRoute>
                 }
               />

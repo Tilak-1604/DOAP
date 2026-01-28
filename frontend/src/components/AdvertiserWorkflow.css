@@ -1,0 +1,268 @@
+.advertiser-workflow-container {
+    max-width: 1000px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+.workflow-header {
+    text-align: center;
+    margin-bottom: 40px;
+}
+
+.workflow-header h1 {
+    color: #2c3e50;
+    margin-bottom: 30px;
+}
+
+.workflow-steps {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+.step {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+}
+
+.step-number {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background-color: #e0e0e0;
+    color: #999;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    transition: all 0.3s;
+}
+
+.step.active .step-number {
+    background-color: #3498db;
+    color: white;
+}
+
+.step-label {
+    font-size: 12px;
+    color: #7f8c8d;
+    font-weight: 500;
+}
+
+.step.active .step-label {
+    color: #2c3e50;
+    font-weight: 600;
+}
+
+.step-connector {
+    width: 80px;
+    height: 2px;
+    background-color: #e0e0e0;
+    margin: 0 10px;
+    margin-bottom: 20px;
+}
+
+.workflow-content {
+    min-height: 400px;
+}
+
+.step-content {
+    animation: fadeIn 0.3s;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.info-box {
+    margin-top: 30px;
+    padding: 20px;
+    background-color: #f8f9fa;
+    border-radius: 8px;
+    border-left: 4px solid #3498db;
+}
+
+.info-box h3 {
+    color: #2c3e50;
+    margin-bottom: 15px;
+    font-size: 16px;
+}
+
+.info-box ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.info-box li {
+    padding: 8px 0;
+    color: #555;
+    font-size: 14px;
+}
+
+.upload-success-info {
+    text-align: center;
+    padding: 30px;
+    background: linear-gradient(135deg, #e8f5e9 0%, #f1f8e9 100%);
+    border-radius: 12px;
+    margin-bottom: 30px;
+}
+
+.success-icon {
+    font-size: 48px;
+    margin-bottom: 10px;
+}
+
+.upload-success-info h3 {
+    color: #2e7d32;
+    margin-bottom: 8px;
+}
+
+.upload-success-info p {
+    color: #558b2f;
+    font-size: 14px;
+}
+
+.preview-container {
+    margin-top: 20px;
+    display: flex;
+    justify-content: center;
+}
+
+.content-preview {
+    max-width: 300px;
+    max-height: 200px;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.workflow-footer {
+    margin-top: 40px;
+    text-align: center;
+}
+
+.back-btn {
+    background-color: #95a5a6;
+    color: white;
+    padding: 10px 24px;
+    border: none;
+    border-radius: 6px;
+    font-size: 14px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.back-btn:hover {
+    background-color: #7f8c8d;
+}
+
+/* Recommendations Section */
+.recommendations-section {
+    padding: 20px;
+}
+
+.recommendations-section h2 {
+    color: #2c3e50;
+    margin-bottom: 10px;
+}
+
+.rec-description {
+    color: #7f8c8d;
+    margin-bottom: 20px;
+}
+
+.loading-recommendations {
+    text-align: center;
+    padding: 40px;
+    color: #3498db;
+}
+
+.recommendations-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 20px;
+    margin-bottom: 30px;
+}
+
+.recommendation-card {
+    border: 2px solid #e0e0e0;
+    border-radius: 12px;
+    padding: 20px;
+    transition: all 0.3s;
+    position: relative;
+}
+
+.recommendation-card:hover {
+    border-color: #3498db;
+    transform: translateY(-4px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.rec-rank {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background-color: #3498db;
+    color: white;
+    padding: 4px 10px;
+    border-radius: 12px;
+    font-size: 12px;
+    font-weight: bold;
+}
+
+.recommendation-card h4 {
+    margin: 0 0 10px 0;
+    color: #2c3e50;
+}
+
+.rec-location {
+    font-size: 14px;
+    color: #7f8c8d;
+    margin: 5px 0;
+}
+
+.rec-score {
+    margin: 10px 0;
+    padding: 8px;
+    background-color: #e8f5e9;
+    border-radius: 6px;
+    text-align: center;
+}
+
+.rec-score strong {
+    color: #27ae60;
+    font-size: 18px;
+}
+
+.btn-view-screen {
+    width: 100%;
+    padding: 10px;
+    background-color: #3498db;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    margin-top: 10px;
+    transition: background-color 0.3s;
+}
+
+.btn-view-screen:hover {
+    background-color: #2980b9;
+}
+
+.no-recommendations {
+    text-align: center;
+    padding: 40px;
+}

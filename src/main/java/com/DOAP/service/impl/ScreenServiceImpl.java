@@ -42,9 +42,14 @@ public class ScreenServiceImpl implements ScreenService {
                 .state(request.getState())
                 .country(request.getCountry())
                 .pincode(request.getPincode())
-                .category(request.getCategory())
                 .latitude(request.getLatitude())
                 .longitude(request.getLongitude())
+                // New Fields
+                .pricePerHour(request.getPricePerHour() != null ? request.getPricePerHour() : 500.0)
+                .ownerBaseRate(request.getOwnerBaseRate() != null ? request.getOwnerBaseRate() : 300.0)
+                .footfallCategory(request.getFootfallCategory())
+                .visibilityLevel(request.getVisibilityLevel())
+                .zone(request.getZone())
                 // Tech mappings
                 .screenType(request.getScreenType())
                 .orientation(request.getOrientation())
@@ -96,7 +101,8 @@ public class ScreenServiceImpl implements ScreenService {
     }
 
     @Override
-    public List<ScreenResponse> getAllScreens(Long userId, String role) {
+    public List<ScreenResponse> getAllScreens(Long userId, String role, java.time.LocalTime startTime,
+                                              java.time.LocalTime endTime) {
         List<Screen> screens;
 
         if ("ADMIN".equals(role)) {
@@ -107,9 +113,13 @@ public class ScreenServiceImpl implements ScreenService {
             screens = screenRepository.findByOwnerId(userId);
         } else if ("ADVERTISER".equals(role)) {
             // Advertiser can only see ACTIVE screens
-            screens = screenRepository.findAll().stream()
-                    .filter(s -> s.getStatus() == ScreenStatus.ACTIVE)
-                    .collect(Collectors.toList());
+            if (startTime != null && endTime != null) {
+                screens = screenRepository.findScreensByTimeRange(startTime, endTime);
+            } else {
+                screens = screenRepository.findAll().stream()
+                        .filter(s -> s.getStatus() == ScreenStatus.ACTIVE)
+                        .collect(Collectors.toList());
+            }
         } else {
             throw new AccessDeniedException("You are not allowed to view screens");
         }
@@ -154,14 +164,24 @@ public class ScreenServiceImpl implements ScreenService {
             screen.setDescription(request.getDescription());
         if (request.getAddress() != null)
             screen.setAddress(request.getAddress());
-        if (request.getCategory() != null)
-            screen.setCategory(request.getCategory());
 
         // Update Lat/Long if provided
         if (request.getLatitude() != null)
             screen.setLatitude(request.getLatitude());
         if (request.getLongitude() != null)
             screen.setLongitude(request.getLongitude());
+
+        // Update New Fields
+        if (request.getPricePerHour() != null)
+            screen.setPricePerHour(request.getPricePerHour());
+        if (request.getOwnerBaseRate() != null)
+            screen.setOwnerBaseRate(request.getOwnerBaseRate());
+        if (request.getFootfallCategory() != null)
+            screen.setFootfallCategory(request.getFootfallCategory());
+        if (request.getVisibilityLevel() != null)
+            screen.setVisibilityLevel(request.getVisibilityLevel());
+        if (request.getZone() != null)
+            screen.setZone(request.getZone());
 
         // Reconstruct composite location string using NEW address and OLD city/pincode
         // (Since City and Pincode are non-editable)
@@ -230,9 +250,15 @@ public class ScreenServiceImpl implements ScreenService {
                 .state(screen.getState())
                 .country(screen.getCountry())
                 .pincode(screen.getPincode())
-                .category(screen.getCategory())
                 .latitude(screen.getLatitude())
                 .longitude(screen.getLongitude())
+                // Pricing
+                .pricePerHour(screen.getPricePerHour())
+                .ownerBaseRate(screen.getOwnerBaseRate())
+                // Classification
+                .footfallCategory(screen.getFootfallCategory())
+                .visibilityLevel(screen.getVisibilityLevel())
+                .zone(screen.getZone())
                 // Tech
                 .screenType(screen.getScreenType())
                 .orientation(screen.getOrientation())

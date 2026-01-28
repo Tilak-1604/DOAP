@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { screenAPI } from '../services/api';
 import ApprovalButtons from './ApprovalButtons';
+import MapModal from './MapModal';
 import './ScreenList.css';
 
 const ScreenList = () => {
@@ -20,17 +21,28 @@ const ScreenList = () => {
 
   // Filters State
   const [filterCity, setFilterCity] = useState('');
-  const [filterCategory, setFilterCategory] = useState('');
+
+  // Time Filters
+  const [filterStartTime, setFilterStartTime] = useState('');
+  const [filterEndTime, setFilterEndTime] = useState('');
+
+  // Map Modal State
+  const [selectedMapScreen, setSelectedMapScreen] = useState(null);
 
   useEffect(() => {
     loadScreens();
-  }, []);
+  }, [filterStartTime, filterEndTime]);
 
   const loadScreens = async () => {
     try {
       setLoading(true);
       setError('');
-      const data = await screenAPI.getAllScreens();
+
+      const params = {};
+      if (filterStartTime) params.startTime = filterStartTime;
+      if (filterEndTime) params.endTime = filterEndTime;
+
+      const data = await screenAPI.getAllScreens(params);
       setScreens(data);
     } catch (err) {
       if (err.response?.status === 401 || err.response?.status === 403) {
@@ -50,10 +62,7 @@ const ScreenList = () => {
       (screen.city && screen.city.toLowerCase().includes(filterCity.toLowerCase())) ||
       (screen.pincode && screen.pincode.includes(filterCity));
 
-    const matchesCategory = filterCategory === '' ||
-      (screen.category && screen.category === filterCategory);
-
-    return matchesCity && matchesCategory;
+    return matchesCity;
   });
 
   const handleApprovalSuccess = () => {
@@ -115,22 +124,25 @@ const ScreenList = () => {
           onChange={(e) => setFilterCity(e.target.value)}
           style={{ padding: '8px', flex: 1 }}
         />
-        <select
-          value={filterCategory}
-          onChange={(e) => setFilterCategory(e.target.value)}
-          style={{ padding: '8px', flex: 1 }}
-        >
-          <option value="">All Categories</option>
-          <option value="Mall">Mall</option>
-          <option value="Shop">Shop</option>
-          <option value="Highway">Highway</option>
-          <option value="Airport">Airport</option>
-          <option value="Metro Station">Metro Station</option>
-          <option value="Bus Stand">Bus Stand</option>
-          <option value="Office Building">Office Building</option>
-          <option value="Hotel/Restaurant">Hotel/Restaurant</option>
-          <option value="Other">Other</option>
-        </select>
+        {/* Time Filters */}
+        {hasRole('ADVERTISER') && (
+          <>
+            <input
+              type="time"
+              value={filterStartTime}
+              onChange={(e) => setFilterStartTime(e.target.value)}
+              style={{ padding: '8px' }}
+              title="Required Start Time"
+            />
+            <input
+              type="time"
+              value={filterEndTime}
+              onChange={(e) => setFilterEndTime(e.target.value)}
+              style={{ padding: '8px' }}
+              title="Required End Time"
+            />
+          </>
+        )}
       </div>
 
       {error && <div className="error-message">{error}</div>}
@@ -213,6 +225,14 @@ const ScreenList = () => {
                   <strong>Location:</strong>
                   <p>{screen.city}, {screen.country}</p>
                   <small style={{ color: '#777' }}>{screen.address} - {screen.pincode}</small>
+                  {/* Map Button */}
+                  <button
+                    className="btn btn-sm btn-info"
+                    style={{ marginTop: '5px', display: 'block', fontSize: '0.8rem', padding: '2px 8px' }}
+                    onClick={() => setSelectedMapScreen(screen)}
+                  >
+                    Show on Map
+                  </button>
                 </div>
 
                 <div style={{ display: 'flex', gap: '15px', marginTop: '10px' }}>
@@ -224,11 +244,6 @@ const ScreenList = () => {
                   <div className="screen-info-item">
                     <strong>Orientation:</strong>
                     <p>{screen.orientation}</p>
-                  </div>
-
-                  <div className="screen-info-item">
-                    <strong>Category:</strong>
-                    <p>{screen.category}</p>
                   </div>
                 </div>
 
@@ -290,6 +305,17 @@ const ScreenList = () => {
             </div>
           ))}
         </div>
+      )}
+
+
+      {/* Map Modal */}
+      {selectedMapScreen && (
+        <MapModal
+          latitude={selectedMapScreen.latitude}
+          longitude={selectedMapScreen.longitude}
+          address={selectedMapScreen.address + ", " + selectedMapScreen.city}
+          onClose={() => setSelectedMapScreen(null)}
+        />
       )}
     </div>
   );

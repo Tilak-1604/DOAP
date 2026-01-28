@@ -22,7 +22,6 @@ const AddScreen = () => {
     area: '', // Selected from dropdown
     customArea: '', // If "Other" selected
     landmark: '',
-    category: '', // NEW: Screen Category
     city: '',
     state: '',
     country: 'India',
@@ -175,10 +174,6 @@ const AddScreen = () => {
       }
       if (!formData.description) {
         setError('Screen Description is mandatory.');
-        return false;
-      }
-      if (!formData.category) {
-        setError('Please select a Category.');
         return false;
       }
     }
@@ -361,22 +356,7 @@ const AddScreen = () => {
                 <div className="helper-text">This information helps advertisers and AI systems understand the real-world impact of this screen.</div>
               </div>
 
-              {/* Category Selection */}
-              <div className="form-group">
-                <label>Category *</label>
-                <select name="category" value={formData.category} onChange={handleChange}>
-                  <option value="">-- Select Category --</option>
-                  <option value="Mall">Mall</option>
-                  <option value="Shop">Shop</option>
-                  <option value="Highway">Highway</option>
-                  <option value="Airport">Airport</option>
-                  <option value="Metro Station">Metro Station</option>
-                  <option value="Bus Stand">Bus Stand</option>
-                  <option value="Office Building">Office Building</option>
-                  <option value="Hotel/Restaurant">Hotel/Restaurant</option>
-                  <option value="Other">Other</option>
-                </select>
-              </div>
+
             </div>
           )}
 
@@ -500,10 +480,7 @@ const AddScreen = () => {
           {currentStep === 3 && (
             <div className="form-section">
               <div className="review-section">
-                <div className="review-item">
-                  <div className="review-label">Category</div>
-                  <div className="review-value">{formData.category}</div>
-                </div>
+
                 <div className="review-item">
                   <div className="review-label">Screen Name</div>
                   <div className="review-value">{formData.screenName}</div>

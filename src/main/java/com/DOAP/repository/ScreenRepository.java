@@ -28,4 +28,14 @@ public interface ScreenRepository extends JpaRepository<Screen, Long> {
     @Lock(LockModeType.PESSIMISTIC_WRITE)
     @Query("SELECT s FROM Screen s WHERE s.id = :id")
     Optional<Screen> findByIdWithLock(@Param("id") Long id);
+
+    // Filter Screens by Time Range
+    // Returns screens where (activeFrom <= requestedStart) AND (activeTo >=
+    // requestedEnd)
+    // AND Status is ACTIVE
+    @Query("SELECT s FROM Screen s WHERE s.status = 'ACTIVE' AND " +
+            "(s.activeFrom IS NULL OR s.activeFrom <= :startTime) AND " +
+            "(s.activeTo IS NULL OR s.activeTo >= :endTime)")
+    List<Screen> findScreensByTimeRange(@Param("startTime") java.time.LocalTime startTime,
+                                        @Param("endTime") java.time.LocalTime endTime);
 }

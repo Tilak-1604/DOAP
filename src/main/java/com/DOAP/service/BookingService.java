@@ -63,7 +63,25 @@ public class BookingService {
             throw new RuntimeException("Content must be APPROVED to book slots");
         }
 
-        // 4. Verification Check (Double Check)
+        // 4. Validate against Screen Operating Hours
+        if (screen.getActiveFrom() != null && screen.getActiveTo() != null) {
+            java.time.LocalTime bookingStartTime = request.getStartDatetime().toLocalTime();
+            java.time.LocalTime bookingEndTime = request.getEndDatetime().toLocalTime();
+
+            // Check if booking is BEFORE operating start
+            if (bookingStartTime.isBefore(screen.getActiveFrom())) {
+                throw new IllegalArgumentException(
+                        "Booking start time is before screen operating hours (" + screen.getActiveFrom() + ")");
+            }
+
+            // Check if booking is AFTER operating end
+            if (bookingEndTime.isAfter(screen.getActiveTo())) {
+                throw new IllegalArgumentException(
+                        "Booking end time is after screen operating hours (" + screen.getActiveTo() + ")");
+            }
+        }
+
+        // 5. Verification Check (Double Check)
         int conflictCount = bookingRepository.countConflictingBookings(
                 request.getScreenId(),
                 request.getStartDatetime(),
@@ -73,7 +91,7 @@ public class BookingService {
             throw new RuntimeException("Slot unavailable: Overlaps with an existing booking");
         }
 
-        // 5. Calculate Price (Snapshot)
+        // 6. Calculate Price (Snapshot)
         Double price = pricingService.calculateAdvertiserPrice(
                 screen,
                 request.getStartDatetime(),

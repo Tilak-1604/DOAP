@@ -16,6 +16,7 @@ public class ContentController {
 
     private final ContentService contentService;
     private final com.DOAP.repository.UserRepository userRepository;
+    private final com.DOAP.repository.ContentRepository contentRepository;
 
     private User getUser(Authentication authentication) {
         Object principal = authentication.getPrincipal();
@@ -43,6 +44,16 @@ public class ContentController {
             return ResponseEntity.badRequest().body(e.getMessage());
         } catch (Exception e) {
             return ResponseEntity.internalServerError().body("Upload failed: " + e.getMessage());
+        }
+    }
+
+    @GetMapping("/my-content")
+    public ResponseEntity<?> getMyContent(Authentication authentication) {
+        try {
+            User user = getUser(authentication);
+            return ResponseEntity.ok(contentRepository.findByUploaderId(user.getId()));
+        } catch (Exception e) {
+            return ResponseEntity.internalServerError().body("Failed to fetch content: " + e.getMessage());
         }
     }
 }

@@ -38,11 +38,17 @@ public class ScreenRequest {
     @NotBlank(message = "Pincode is required")
     private String pincode;
 
-    @NotBlank(message = "Category is required")
-    private String category;
-
     private Double latitude;
     private Double longitude;
+
+    // Step 1.5: Pricing & Classification
+    private Double pricePerHour;
+    private Double ownerBaseRate;
+
+    // Structured Details
+    private com.DOAP.entity.enums.FootfallCategory footfallCategory;
+    private com.DOAP.entity.enums.VisibilityLevel visibilityLevel;
+    private String zone;
 
     // Step 2: Technical Specs
     @NotNull(message = "Screen type is required")

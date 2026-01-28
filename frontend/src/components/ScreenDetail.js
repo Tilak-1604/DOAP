@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { screenAPI, bookingAPI, paymentAPI } from '../services/api';
 import { useAuth } from '../context/AuthContext';
-import UploadComponent from './UploadComponent';
+import ContentSelector from './ContentSelector';
 // import './ScreenDetail.css'; // Add if needed
 
 const ScreenDetail = () => {
@@ -21,7 +21,7 @@ const ScreenDetail = () => {
 
     // Booking Wizard State
     const [showUploadModal, setShowUploadModal] = useState(false);
-    const [bookingStep, setBookingStep] = useState('UPLOAD'); // UPLOAD, DETAILS
+    const [bookingStep, setBookingStep] = useState('SELECT'); // SELECT, DETAILS, PAYMENT
     const [uploadedContent, setUploadedContent] = useState(null);
     const [startDate, setStartDate] = useState('');
     const [endDate, setEndDate] = useState('');
@@ -114,7 +114,7 @@ const ScreenDetail = () => {
 
             alert("Payment Successful! Booking Confirmed: " + bookingResponse.bookingReference);
             setShowUploadModal(false);
-            setBookingStep('UPLOAD');
+            setBookingStep('SELECT');
             setUploadedContent(null);
             setStartDate('');
             setEndDate('');
@@ -197,7 +197,7 @@ const ScreenDetail = () => {
                         <p><strong>City:</strong> {screen.city}</p>
                         <p><strong>Area:</strong> {screen.location ? screen.location : `${screen.address}, ${screen.pincode}`}</p>
                         {/* Fallback usage of screen.location if address/pincode separate fields are empty in legacy data */}
-                        <p><strong>Category:</strong> {screen.category}</p>
+                        <p><strong>Area:</strong> {screen.location ? screen.location : `${screen.address}, ${screen.pincode}`}</p>
                     </div>
                     <div>
                         <h3>Technical Specs</h3>
@@ -253,20 +253,19 @@ const ScreenDetail = () => {
                     }}>
                         <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '20px', borderBottom: '1px solid #eee', paddingBottom: '10px' }}>
                             <h3 style={{ margin: 0 }}>Book Screen: {screen.screenName}</h3>
-                            <button onClick={() => { setShowUploadModal(false); setBookingStep('UPLOAD'); setUploadedContent(null); }}
+                            <button onClick={() => { setShowUploadModal(false); setBookingStep('SELECT'); setUploadedContent(null); }}
                                 style={{ border: 'none', background: 'none', fontSize: '24px', cursor: 'pointer' }}>&times;</button>
                         </div>
 
-                        {bookingStep === 'UPLOAD' && (
+                        {bookingStep === 'SELECT' && (
                             <div>
-                                <h4 style={{ marginBottom: '10px' }}>Step 1: Content Validation</h4>
+                                <h4 style={{ marginBottom: '10px' }}>Step 1: Select Advertisement Content</h4>
                                 <p style={{ marginBottom: '20px', color: '#666', fontSize: '0.9em' }}>
-                                    Upload your ad content. Our AI will instantly analyze it for safety compliance.
-                                    Only approved content can be used for booking.
+                                    Choose from your previously uploaded and approved content.
                                 </p>
-                                <UploadComponent onUploadSuccess={(result) => {
-                                    console.log("Upload Success:", result);
-                                    setUploadedContent(result);
+                                <ContentSelector onContentSelected={(content) => {
+                                    console.log("Content Selected:", content);
+                                    setUploadedContent(content);
                                     setBookingStep('DETAILS');
                                 }} />
                             </div>
@@ -310,7 +309,7 @@ const ScreenDetail = () => {
                                             {/* Render Green Blocks for Available Ranges */}
                                             {availableRanges.map((range, idx) => {
                                                 // Parse times to calculate % width and position
-                                                // range string format: "HH:mm - HH:mm" (from fetchAvailability) -- WAIT, fetchAvailability formats it.
+                                                // range string format: "HH:mm - HH:mm" (from fetchAvailability) -- WAIT, fetchAvailability formats it. 
                                                 // Let's modify fetchAvailability to store raw objects for this visualization, or parse back.
                                                 // Actually, better to store raw ranges in state.
 
@@ -390,7 +389,7 @@ const ScreenDetail = () => {
 
                                 <div style={{ display: 'flex', gap: '10px', justifyContent: 'flex-end' }}>
                                     <button
-                                        onClick={() => setBookingStep('UPLOAD')}
+                                        onClick={() => setBookingStep('SELECT')}
                                         className="btn btn-secondary"
                                     >
                                         Back

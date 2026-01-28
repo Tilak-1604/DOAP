@@ -28,10 +28,17 @@ public class ScreenResponse {
     private String state;
     private String country;
     private String pincode;
-    private String category; // e.g. Mall, Shop
     private String location; // Legacy/Composite
     private Double latitude;
     private Double longitude;
+
+    // Pricing & Classification
+    private Double pricePerHour;
+    private Double ownerBaseRate;
+
+    private com.DOAP.entity.enums.FootfallCategory footfallCategory;
+    private com.DOAP.entity.enums.VisibilityLevel visibilityLevel;
+    private String zone;
 
     // Tech Specs
     private ScreenType screenType;

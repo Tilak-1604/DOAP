@@ -61,7 +61,9 @@ public class ScreenController {
     @GetMapping
     @PreAuthorize("hasAnyRole('ADMIN', 'SCREEN_OWNER', 'ADVERTISER')")
     public ResponseEntity<List<ScreenResponse>> getAllScreens(
-            Authentication authentication) {
+            Authentication authentication,
+            @RequestParam(required = false) java.time.LocalTime startTime,
+            @RequestParam(required = false) java.time.LocalTime endTime) {
 
         User user = getUser(authentication);
 
@@ -72,7 +74,7 @@ public class ScreenController {
                 .findFirst()
                 .orElse("ADVERTISER");
 
-        List<ScreenResponse> screens = screenService.getAllScreens(user.getId(), role);
+        List<ScreenResponse> screens = screenService.getAllScreens(user.getId(), role, startTime, endTime);
         return ResponseEntity.ok(screens);
     }
 

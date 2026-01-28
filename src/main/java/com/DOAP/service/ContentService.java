@@ -24,6 +24,7 @@ public class ContentService {
     private final S3Service s3Service;
     private final RekognitionService rekognitionService;
     private final ContentRepository contentRepository;
+    private final com.DOAP.repository.AdVisionMetadataRepository adVisionMetadataRepository;
 
     @Value("${aws.s3.bucket.temp}")
     private String tempBucket;
@@ -47,16 +48,25 @@ public class ContentService {
         log.info("Uploaded {} to temp bucket {}", key, tempBucket);
 
         try {
+            // Small delay to ensure S3 consistency (rare but possible issue)
+            Thread.sleep(1000);
+
             // ===== AI VALIDATION START =====
+            String detectedLabels = "";
+            String detectedText = "";
+            String moderationResult = "";
 
             if (contentType == ContentType.IMAGE) {
-                validateImage(tempBucket, key);
+                log.info("Validating image in bucket: {}, key: {}", tempBucket, key);
+                String[] results = validateImageAndExtractMetadata(tempBucket, key);
+                detectedLabels = results[0];
+                moderationResult = results[1];
             } else if (contentType == ContentType.VIDEO) {
-                validateVideo(tempBucket, key);
+                log.info("Validating video in bucket: {}, key: {}", tempBucket, key);
+                moderationResult = validateVideo(tempBucket, key);
             } else {
                 cleanupAndReject(key, "Unsupported content type");
             }
-
             // ===== AI VALIDATION PASSED =====
 
             // 3. Move to APPROVED bucket
@@ -75,10 +85,23 @@ public class ContentService {
                     .validationDetails("Approved: Strict AI Validation Passed")
                     .build();
 
-            return contentRepository.save(content);
+            Content savedContent = contentRepository.save(content);
+
+            // 5. Save AdVisionMetadata
+            com.DOAP.entity.AdVisionMetadata metadata = com.DOAP.entity.AdVisionMetadata.builder()
+                    .content(savedContent)
+                    .detectedLabels(detectedLabels)
+                    .detectedText(detectedText)
+                    .moderationResult(moderationResult)
+                    .confidenceScores("See individual fields")
+                    .build();
+            adVisionMetadataRepository.save(metadata);
+
+            return savedContent;
 
         } catch (RuntimeException ex) {
             log.warn("Content rejected: {}", ex.getMessage());
+            cleanupSilently(key);
             throw ex;
         } catch (Exception ex) {
             log.error("Unexpected error during upload", ex);
@@ -89,10 +112,11 @@ public class ContentService {
 
     // ================= HELPER METHODS =================
 
-    private void validateImage(String bucketName, String key) {
+    private String[] validateImageAndExtractMetadata(String bucketName, String key) {
         // A. Adult / sexual / violence detection
+        System.out.println("\n\n\n\n\n\n\n\n\n\n\n\nValidating image in bucket: " + bucketName + ", key: " + key);
         List<ModerationLabel> labels = rekognitionService.detectModerationLabels(bucketName, key);
-
+        System.out.println("\n\n\n\n\n\n\n\n\n\n\n\nModeration labels: " + labels);
         boolean explicitUnsafe = labels.stream().anyMatch(label -> label.confidence() >= 70 &&
                 (label.name().toLowerCase().contains("nudity") ||
                         label.name().toLowerCase().contains("sexual") ||
@@ -131,9 +155,23 @@ public class ContentService {
         if (isDocument) {
             cleanupAndReject(key, "Document or text-based images not allowed");
         }
+
+        // Extract metadata for storage
+        String detectedLabels = imageLabels.stream()
+                .filter(l -> l.confidence() >= 70)
+                .map(l -> l.name() + "(" + String.format("%.1f", l.confidence()) + "%)")
+                .reduce((a, b) -> a + ", " + b)
+                .orElse("None");
+
+        String moderationResult = labels.stream()
+                .map(l -> l.name() + "(" + String.format("%.1f", l.confidence()) + "%)")
+                .reduce((a, b) -> a + ", " + b)
+                .orElse("Safe");
+
+        return new String[] { detectedLabels, moderationResult };
     }
 
-    private void validateVideo(String bucketName, String key) throws InterruptedException {
+    private String validateVideo(String bucketName, String key) throws InterruptedException {
         log.info("Starting async video moderation for {}", key);
 
         // Start async moderation job
@@ -157,6 +195,16 @@ public class ContentService {
         }
 
         log.info("Video validation passed for {}", key);
+
+        // Return moderation summary
+        String moderationSummary = detections.stream()
+                .map(d -> d.moderationLabel().name() + "(" + String.format("%.1f", d.moderationLabel().confidence())
+                        + "%)")
+                .distinct()
+                .reduce((a, b) -> a + ", " + b)
+                .orElse("Safe");
+
+        return moderationSummary;
     }
 
     private void cleanupAndReject(String key, String reason) {

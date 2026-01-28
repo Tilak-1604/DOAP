@@ -16,7 +16,8 @@ public interface ScreenService {
             Long adminId,
             String role);
 
-    List<ScreenResponse> getAllScreens(Long userId, String role);
+    List<ScreenResponse> getAllScreens(Long userId, String role, java.time.LocalTime startTime,
+                                       java.time.LocalTime endTime);
 
     ScreenResponse getScreenById(Long screenId, Long userId, String role);
 

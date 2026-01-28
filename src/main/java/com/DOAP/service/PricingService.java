@@ -15,13 +15,10 @@ public class PricingService {
      */
     public Double calculateAdvertiserPrice(Screen screen, LocalDateTime start, LocalDateTime end) {
         long minutes = Duration.between(start, end).toMinutes();
-        double hours = minutes / 60.0;
-        // Ensure minimum 1 hour billing or exact minutes? Let's do exact pro-rata for
-        // now
-        // But master prompt suggested "hours", typically outdoor is hourly.
-        // Let's stick to exact logic: (rate / 60) * minutes
-
-        return screen.getPricePerHour() * (minutes / 60.0);
+        Double rate = (screen.getPricePerHour() != null && screen.getPricePerHour() > 0)
+                ? screen.getPricePerHour()
+                : 500.0; // Fallback to default
+        return rate * (minutes / 60.0);
     }
 
     /**
@@ -30,6 +27,9 @@ public class PricingService {
      */
     public Double calculateOwnerEarning(Screen screen, LocalDateTime start, LocalDateTime end) {
         long minutes = Duration.between(start, end).toMinutes();
-        return screen.getOwnerBaseRate() * (minutes / 60.0);
+        Double rate = (screen.getOwnerBaseRate() != null && screen.getOwnerBaseRate() > 0)
+                ? screen.getOwnerBaseRate()
+                : 300.0; // Fallback to default
+        return rate * (minutes / 60.0);
     }
 }
