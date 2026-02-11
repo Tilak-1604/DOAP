@@ -17,6 +17,7 @@ public class ContentController {
     private final ContentService contentService;
     private final com.DOAP.repository.UserRepository userRepository;
     private final com.DOAP.repository.ContentRepository contentRepository;
+    private final com.DOAP.repository.AdVisionMetadataRepository adVisionMetadataRepository;
 
     private User getUser(Authentication authentication) {
         Object principal = authentication.getPrincipal();
@@ -33,7 +34,7 @@ public class ContentController {
 
     @PostMapping("/upload")
     public ResponseEntity<?> uploadContent(@RequestParam("file") MultipartFile file,
-                                           Authentication authentication) {
+            Authentication authentication) {
         try {
             User user = getUser(authentication);
             Content content = contentService.uploadAndValidateContent(file, user.getId());
@@ -54,6 +55,26 @@ public class ContentController {
             return ResponseEntity.ok(contentRepository.findByUploaderId(user.getId()));
         } catch (Exception e) {
             return ResponseEntity.internalServerError().body("Failed to fetch content: " + e.getMessage());
+        }
+    }
+
+    @GetMapping("/my-metadata")
+    public ResponseEntity<?> getMyContentMetadata(Authentication authentication) {
+        try {
+            User user = getUser(authentication);
+            // Assuming we need a way to find metadata for all user content.
+            // Since we don't have a direct repository method for this yet, we can fetch
+            // content first then metadata.
+            // But better to use JPQL in repo.
+            // Let's us a simple loop or modify repo.
+            // Actually, I can add a method to AdVisionMetadataRepository:
+            // findByContentUploaderId(Long uploaderId)
+            // But AdVisionMetadata has 'content'. 'content' has 'uploaderId'.
+            // So: findByContent_UploaderId(Long uploaderId) should work with Spring Data
+            // JPA property expression.
+            return ResponseEntity.ok(adVisionMetadataRepository.findByContent_UploaderId(user.getId()));
+        } catch (Exception e) {
+            return ResponseEntity.internalServerError().body("Failed to fetch metadata: " + e.getMessage());
         }
     }
 }

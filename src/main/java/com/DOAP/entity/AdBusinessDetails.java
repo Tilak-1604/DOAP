@@ -26,6 +26,9 @@ public class AdBusinessDetails {
     private Content content;
 
     @Column(nullable = false)
+    private String adTitle;
+
+    @Column(nullable = false)
     private String businessType; // e.g., "Restaurant", "Retail"
 
     @Column(columnDefinition = "TEXT", nullable = false)

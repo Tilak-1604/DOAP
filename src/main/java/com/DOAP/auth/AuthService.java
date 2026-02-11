@@ -10,17 +10,20 @@ import com.DOAP.entity.UserRole;
 import com.DOAP.repository.RoleRepository;
 import com.DOAP.repository.UserRepository;
 import com.DOAP.repository.UserRoleRepository;
+import com.DOAP.service.GoogleTokenVerifier;
+import com.DOAP.service.JwtService;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import com.DOAP.service.JwtService;
-import com.DOAP.service.GoogleTokenVerifier;
+
+import lombok.extern.slf4j.Slf4j;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
+@Slf4j
 public class AuthService {
     private final UserRepository userRepository;
     private final RoleRepository roleRepository;
@@ -28,22 +31,25 @@ public class AuthService {
     private final PasswordEncoder passwordEncoder;
     private final JwtService jwtService;
     private final GoogleTokenVerifier googleTokenVerifier;
+    private final com.DOAP.service.EmailService emailService;
 
     @Value("${jwt.expiration}")
     private Long jwtExpiration;
 
     public AuthService(UserRepository userRepository,
-                       RoleRepository roleRepository,
-                       UserRoleRepository userRoleRepository,
-                       PasswordEncoder passwordEncoder,
-                       JwtService jwtService,
-                       GoogleTokenVerifier googleTokenVerifier) {
+            RoleRepository roleRepository,
+            UserRoleRepository userRoleRepository,
+            PasswordEncoder passwordEncoder,
+            JwtService jwtService,
+            GoogleTokenVerifier googleTokenVerifier,
+            com.DOAP.service.EmailService emailService) {
         this.userRepository = userRepository;
         this.roleRepository = roleRepository;
         this.userRoleRepository = userRoleRepository;
         this.passwordEncoder = passwordEncoder;
         this.jwtService = jwtService;
         this.googleTokenVerifier = googleTokenVerifier;
+        this.emailService = emailService;
     }
 
     @Transactional
@@ -53,7 +59,6 @@ public class AuthService {
         if (userRepository.findByEmail(request.getEmail()).isPresent()) {
             throw new RuntimeException("Email already registered");
         }
-
 
         // 2️⃣ Create user
         User user = new User();
@@ -75,6 +80,13 @@ public class AuthService {
         userRole.setRole(role);
 
         userRoleRepository.save(userRole);
+
+        // 5️⃣ Send Welcome Email
+        try {
+            emailService.sendRegistrationEmail(user.getEmail(), user.getName(), role.getRoleName());
+        } catch (Exception e) {
+            log.error("Failed to send registration email to {}", user.getEmail(), e);
+        }
     }
 
     /**
@@ -106,14 +118,16 @@ public class AuthService {
         String token = jwtService.generateToken(user, roles);
 
         // 6️⃣ Return response with token
+        log.info("Generating token for user {} with roles {}", user.getEmail(), roles);
         Long expiresInSeconds = jwtExpiration / 1000; // Convert milliseconds to seconds
         return new LoginResponse(token, expiresInSeconds);
     }
 
     /**
      * Google OAuth Login
-     * Verifies Google ID Token, creates user if doesn't exist, and generates DOAP JWT
-     *
+     * Verifies Google ID Token, creates user if doesn't exist, and generates DOAP
+     * JWT
+     * 
      * @param idToken Google ID Token from frontend
      * @return LoginResponse with DOAP JWT token
      */
@@ -131,7 +145,7 @@ public class AuthService {
             user = new User();
             user.setEmail(googleUser.getEmail());
             user.setName(googleUser.getName());
-            user.setPasswordHash(null);  // Google users don't have password
+            user.setPasswordHash(null); // Google users don't have password
             user.setAuthProvider(AuthProvider.GOOGLE);
             user.setActive(true);
 

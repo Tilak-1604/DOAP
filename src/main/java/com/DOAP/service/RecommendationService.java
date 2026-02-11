@@ -48,11 +48,11 @@ public class RecommendationService {
                 .orElseThrow(() -> new RuntimeException("Content not found"));
         log.info("Content found: {}", content.getId());
 
-        AdBusinessDetails businessDetails = adBusinessDetailsRepository.findByContentId(contentId)
+        AdBusinessDetails businessDetails = adBusinessDetailsRepository.findByContent_Id(contentId)
                 .orElseThrow(() -> new RuntimeException("Ad business details not found"));
         log.info("Business details found: {}", businessDetails.getBusinessType());
 
-        AdVisionMetadata visionMetadata = adVisionMetadataRepository.findByContentId(contentId)
+        AdVisionMetadata visionMetadata = adVisionMetadataRepository.findByContent_Id(contentId)
                 .orElse(null);
         log.info("Vision metadata found: {}", visionMetadata != null);
 

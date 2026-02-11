@@ -8,5 +8,7 @@ import java.util.Optional;
 
 @Repository
 public interface AdVisionMetadataRepository extends JpaRepository<AdVisionMetadata, Long> {
-    Optional<AdVisionMetadata> findByContentId(Long contentId);
+    Optional<AdVisionMetadata> findByContent_Id(Long contentId);
+
+    java.util.List<AdVisionMetadata> findByContent_UploaderId(Long uploaderId);
 }

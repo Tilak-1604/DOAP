@@ -15,29 +15,30 @@ import java.util.List;
  */
 @Configuration
 public class CorsConfig {
+    
 
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-
+        
         // Allow React frontend origin
         configuration.setAllowedOrigins(List.of("http://localhost:3000"));
-
+        
         // Allow common HTTP methods
         configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
-
+        
         // Allow all headers (including Authorization for JWT)
         configuration.setAllowedHeaders(Arrays.asList("*"));
-
+        
         // Allow credentials (cookies, authorization headers)
         configuration.setAllowCredentials(true);
-
+        
         // Cache preflight response for 1 hour
         configuration.setMaxAge(3600L);
-
+        
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", configuration);
-
+        
         return source;
     }
 }

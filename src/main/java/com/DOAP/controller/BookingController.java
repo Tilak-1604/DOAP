@@ -70,4 +70,50 @@ public class BookingController {
             return ResponseEntity.badRequest().body("Invalid request: " + e.getMessage());
         }
     }
+
+    @GetMapping("/{id}/invoice")
+    public ResponseEntity<byte[]> downloadInvoice(@PathVariable Long id, Authentication authentication) {
+        try {
+            User user = getUser(authentication);
+            BookingResponse booking = bookingService.getBookingById(id);
+
+            // Authorization: Only Advertiser (Owner of booking) or Admin
+            boolean isAdvertiser = booking.getAdvertiserId().equals(user.getId());
+            boolean isAdmin = authentication.getAuthorities().stream()
+                    .anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN"));
+
+            if (!isAdvertiser && !isAdmin) {
+                return ResponseEntity.status(403).build(); // Forbidden
+            }
+
+            // Check if booking is CONFIRMED
+            if (booking.getStatus() != com.DOAP.entity.enums.BookingStatus.CONFIRMED) {
+                return ResponseEntity.badRequest().body(null); // Invoice only for confirmed bookings
+            }
+
+            // Generate PDF
+            byte[] pdfBytes = bookingService.generateInvoicePdf(id);
+
+            return ResponseEntity.ok()
+                    .header(org.springframework.http.HttpHeaders.CONTENT_DISPOSITION,
+                            "attachment; filename=invoice_" + id + ".pdf")
+                    .contentType(org.springframework.http.MediaType.APPLICATION_PDF)
+                    .body(pdfBytes);
+
+        } catch (Exception e) {
+            return ResponseEntity.internalServerError().build();
+        }
+    }
+
+    @GetMapping("/screen/{screenId}/slots")
+    public ResponseEntity<List<com.DOAP.service.BookingService.SlotStatus>> getSlotsStatus(
+            @PathVariable Long screenId,
+            @RequestParam String date) {
+        try {
+            java.time.LocalDate localDate = java.time.LocalDate.parse(date);
+            return ResponseEntity.ok(bookingService.getSlotsStatus(screenId, localDate));
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().build();
+        }
+    }
 }

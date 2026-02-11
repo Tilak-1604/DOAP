@@ -8,5 +8,5 @@ import java.util.Optional;
 
 @Repository
 public interface AdBusinessDetailsRepository extends JpaRepository<AdBusinessDetails, Long> {
-    Optional<AdBusinessDetails> findByContentId(Long contentId);
+    Optional<AdBusinessDetails> findByContent_Id(Long contentId);
 }

@@ -20,7 +20,8 @@ public class AdBusinessDetailsController {
             AdBusinessDetails details = adBusinessDetailsService.saveAdDetails(request);
             return ResponseEntity.ok(details);
         } catch (Exception e) {
-            return ResponseEntity.badRequest().build();
+            e.printStackTrace(); // Log error to console
+            return ResponseEntity.badRequest().body(null);
         }
     }
 

@@ -23,11 +23,12 @@ public class AdBusinessDetailsService {
                 .orElseThrow(() -> new EntityNotFoundException("Content not found with ID: " + request.getContentId()));
 
         // Check if details already exist for this content
-        AdBusinessDetails existingDetails = adBusinessDetailsRepository.findByContentId(request.getContentId())
+        AdBusinessDetails existingDetails = adBusinessDetailsRepository.findByContent_Id(request.getContentId())
                 .orElse(null);
 
         if (existingDetails != null) {
             // Update existing
+            existingDetails.setAdTitle(request.getAdTitle());
             existingDetails.setBusinessType(request.getBusinessType());
             existingDetails.setCampaignDescription(request.getCampaignDescription());
             existingDetails.setBudgetRange(request.getBudgetRange());
@@ -37,6 +38,7 @@ public class AdBusinessDetailsService {
             // Create new
             AdBusinessDetails details = AdBusinessDetails.builder()
                     .content(content)
+                    .adTitle(request.getAdTitle())
                     .businessType(request.getBusinessType())
                     .campaignDescription(request.getCampaignDescription())
                     .budgetRange(request.getBudgetRange())
@@ -47,7 +49,7 @@ public class AdBusinessDetailsService {
     }
 
     public AdBusinessDetails getDetailsByContentId(Long contentId) {
-        return adBusinessDetailsRepository.findByContentId(contentId)
+        return adBusinessDetailsRepository.findByContent_Id(contentId)
                 .orElseThrow(() -> new EntityNotFoundException("Ad details not found for content ID: " + contentId));
     }
 }

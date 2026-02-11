@@ -8,21 +8,21 @@ import java.util.List;
 
 public interface ScreenService {
 
-    ScreenResponse addScreen(ScreenRequest request, Long userId, String role);
+        ScreenResponse addScreen(ScreenRequest request, Long userId, String role);
 
-    ScreenResponse approveScreen(
-            Long screenId,
-            ScreenApprovalRequest request,
-            Long adminId,
-            String role);
+        ScreenResponse approveScreen(
+                        Long screenId,
+                        ScreenApprovalRequest request,
+                        Long adminId,
+                        String role);
 
-    List<ScreenResponse> getAllScreens(Long userId, String role, java.time.LocalTime startTime,
-                                       java.time.LocalTime endTime);
+        List<ScreenResponse> getAllScreens(Long userId, String role, java.time.LocalTime startTime,
+                        java.time.LocalTime endTime);
 
-    ScreenResponse getScreenById(Long screenId, Long userId, String role);
+        ScreenResponse getScreenById(Long screenId, Long userId, String role);
 
-    ScreenResponse updateScreen(Long screenId, ScreenRequest request, Long userId, String role);
+        ScreenResponse updateScreen(Long screenId, ScreenRequest request, Long userId, String role);
 
-    ScreenResponse updateScreenStatus(Long screenId, com.DOAP.entity.enums.ScreenStatus status, Long userId,
-                                      String role);
+        ScreenResponse updateScreenStatus(Long screenId, com.DOAP.entity.enums.ScreenStatus status, Long userId,
+                        String role);
 }

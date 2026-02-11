@@ -22,6 +22,8 @@ public class ScreenServiceImpl implements ScreenService {
 
     private final ScreenRepository screenRepository;
     private final com.DOAP.repository.UserRepository userRepository;
+    private final com.DOAP.service.PlatformSettingsService platformSettingsService;
+    private final com.DOAP.service.EmailService emailService;
 
     @Override
     @Transactional
@@ -30,6 +32,12 @@ public class ScreenServiceImpl implements ScreenService {
         // Only ADMIN and SCREEN_OWNER can add screens
         if (!"ADMIN".equals(role) && !"SCREEN_OWNER".equals(role)) {
             throw new AccessDeniedException("You are not allowed to add screens");
+        }
+
+        // Determine initial status based on Platform Settings
+        ScreenStatus initialStatus = ScreenStatus.PENDING_APPROVAL;
+        if ("ADMIN".equals(role) || platformSettingsService.getSettings().getAutoApproveScreens()) {
+            initialStatus = ScreenStatus.ACTIVE;
         }
 
         Screen screen = Screen.builder()
@@ -62,11 +70,29 @@ public class ScreenServiceImpl implements ScreenService {
                 // Ownership
                 .ownerId(userId)
                 .ownerRole(role)
-                .status(ScreenStatus.INACTIVE) // Pending admin approval
+                .status(initialStatus) // Use the determined status
                 .createdBy(userId)
                 .build();
 
+        // If auto-approved, record approval details
+        if (initialStatus == ScreenStatus.ACTIVE) {
+            screen.setApprovedAt(LocalDateTime.now());
+            screen.setApprovedBy(userId);
+        }
+
         Screen savedScreen = screenRepository.save(screen);
+
+        // Send Email Notification
+        try {
+            String ownerEmail = userRepository.findById(userId)
+                    .map(com.DOAP.entity.User::getEmail)
+                    .orElse("Unknown");
+            emailService.sendScreenAddedEmail(ownerEmail, savedScreen.getScreenName(),
+                    savedScreen.getStatus().toString());
+        } catch (Exception e) {
+            // log.error("Failed to send screen added email", e);
+        }
+
         return mapToResponse(savedScreen);
     }
 
@@ -102,7 +128,7 @@ public class ScreenServiceImpl implements ScreenService {
 
     @Override
     public List<ScreenResponse> getAllScreens(Long userId, String role, java.time.LocalTime startTime,
-                                              java.time.LocalTime endTime) {
+            java.time.LocalTime endTime) {
         List<Screen> screens;
 
         if ("ADMIN".equals(role)) {

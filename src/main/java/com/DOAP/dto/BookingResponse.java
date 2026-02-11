@@ -11,6 +11,7 @@ import java.time.LocalDateTime;
 public class BookingResponse {
     private Long id;
     private String bookingReference;
+    private Long advertiserId;
     private Long screenId;
     private Long contentId;
     private LocalDateTime startDatetime;

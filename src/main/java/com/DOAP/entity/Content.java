@@ -23,10 +23,10 @@ public class Content {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false)
+    @Column(name = "s3_url", nullable = false)
     private String s3Url;
 
-    @Column(nullable = false)
+    @Column(name = "s3_key", nullable = false)
     private String s3Key;
 
     @Enumerated(EnumType.STRING)

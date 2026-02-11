@@ -18,7 +18,7 @@ public class GoogleTokenVerifier {
 
     /**
      * Verify Google ID Token and extract user information
-     *
+     * 
      * @param idToken Google ID Token from frontend
      * @return GoogleUserInfo containing email, name, and email_verified status
      * @throws RuntimeException if token is invalid
@@ -36,8 +36,8 @@ public class GoogleTokenVerifier {
 
             // Extract user information
             String email = payload.getPayload().get("email").toString();
-            String name = payload.getPayload().containsKey("name")
-                    ? payload.getPayload().get("name").toString()
+            String name = payload.getPayload().containsKey("name") 
+                    ? payload.getPayload().get("name").toString() 
                     : email.split("@")[0];  // Fallback to email prefix if name not available
             Boolean emailVerified = payload.getPayload().containsKey("email_verified")
                     ? Boolean.parseBoolean(payload.getPayload().get("email_verified").toString())

@@ -1,6 +1,7 @@
 package com.DOAP.service;
 
 import com.DOAP.entity.Content;
+import com.DOAP.entity.Payment;
 import com.DOAP.entity.enums.ContentStatus;
 import com.DOAP.entity.enums.ContentType;
 import com.DOAP.repository.ContentRepository;
@@ -14,6 +15,7 @@ import software.amazon.awssdk.services.rekognition.model.ModerationLabel;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 @Service
@@ -25,7 +27,6 @@ public class ContentService {
     private final RekognitionService rekognitionService;
     private final ContentRepository contentRepository;
     private final com.DOAP.repository.AdVisionMetadataRepository adVisionMetadataRepository;
-
     @Value("${aws.s3.bucket.temp}")
     private String tempBucket;
 
@@ -205,6 +206,61 @@ public class ContentService {
                 .orElse("Safe");
 
         return moderationSummary;
+    }
+
+    private final com.DOAP.repository.BookingRepository bookingRepository;
+    private final com.DOAP.repository.PaymentRepository paymentRepository;
+    private final com.DOAP.repository.AdBusinessDetailsRepository adBusinessDetailsRepository;
+
+    @Transactional
+    public void deleteContent(Long contentId, Long userId) {
+        // Log to debug
+        log.info("Deleting content {} for user {}", contentId, userId);
+
+        Content content = contentRepository.findById(contentId)
+                .orElseThrow(() -> new RuntimeException("Content not found"));
+
+        if (!content.getUploaderId().equals(userId)) {
+            throw new RuntimeException("Unauthorized: You do not own this content");
+        }
+
+        // 1. Delete AdVisionMetadata
+        adVisionMetadataRepository.findByContent_Id(contentId).ifPresent(metadata -> {
+            adVisionMetadataRepository.delete(metadata);
+            log.info("Deleted AdVisionMetadata for content {}", contentId);
+        });
+
+        // 2. Delete AdBusinessDetails
+        adBusinessDetailsRepository.findByContent_Id(contentId).ifPresent(details -> {
+            adBusinessDetailsRepository.delete(details);
+            log.info("Deleted AdBusinessDetails for content {}", contentId);
+        });
+
+        // 3. Delete Bookings and Payments
+        List<com.DOAP.entity.Booking> bookings = bookingRepository.findByContentId(contentId);
+        for (com.DOAP.entity.Booking booking : bookings) {
+            // Delete associated payments
+            List<Payment> payments = paymentRepository.findByBookingId(booking.getId());
+            if (!payments.isEmpty()) {
+                paymentRepository.deleteAll(payments);
+                log.info("Deleted {} payments for booking {}", payments.size(), booking.getId());
+            }
+            // Delete booking
+            bookingRepository.delete(booking);
+            log.info("Deleted booking {}", booking.getId());
+        }
+
+        // 4. Delete from S3 (Approved Bucket)
+        try {
+            s3Service.deleteFile(approvedBucket, content.getS3Key());
+            log.info("Deleted file from S3: {}", content.getS3Key());
+        } catch (Exception e) {
+            log.error("Failed to delete file from S3: {}", content.getS3Key(), e);
+        }
+
+        // 5. Delete Content from DB
+        contentRepository.delete(content);
+        log.info("Deleted content {}", contentId);
     }
 
     private void cleanupAndReject(String key, String reason) {

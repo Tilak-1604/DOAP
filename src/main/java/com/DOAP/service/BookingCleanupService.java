@@ -19,19 +19,29 @@ public class BookingCleanupService {
 
     private final BookingRepository bookingRepository;
 
+    /**
+     * Runs every minute to check for expired HELD bookings.
+     * If a booking is in HELD state and its expiresAt time has passed,
+     * mark it as EXPIRED/FAILED availability will open up automatically.
+     */
     @Scheduled(fixedRate = 60000) // Run every 60 seconds
     @Transactional
-    public void expireOldBookings() {
+    public void cleanupExpiredBookings() {
         LocalDateTime now = LocalDateTime.now();
+
         List<Booking> expiredBookings = bookingRepository.findExpiredBookings(now);
 
         if (!expiredBookings.isEmpty()) {
-            log.info("Found {} bookings to expire", expiredBookings.size());
+            log.info("Found {} expired bookings. Marking as EXPIRED.", expiredBookings.size());
+
             for (Booking booking : expiredBookings) {
+                log.info("Expiring Booking ID: {} (Reference: {}). Expired at: {}",
+                        booking.getId(), booking.getBookingReference(), booking.getExpiresAt());
                 booking.setStatus(BookingStatus.EXPIRED);
-                log.info("Expired booking: {}", booking.getBookingReference());
             }
+
             bookingRepository.saveAll(expiredBookings);
+            log.info("Successfully expired {} bookings. Screens are now released.", expiredBookings.size());
         }
     }
 }
