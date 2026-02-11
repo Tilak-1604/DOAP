@@ -123,8 +123,6 @@ The system recommends screens based on:
 - Screen category
 - Availability
 
-Phase 1 uses rule-based scoring and can be extended to ML in the future.
-
 ---
 
 ## 🛡 Content Validation
