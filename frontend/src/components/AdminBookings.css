@@ -1,0 +1,182 @@
+.admin-bookings {
+    padding: 24px;
+    background-color: #f8f9fa;
+    min-height: 100vh;
+}
+
+.page-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 30px;
+}
+
+.page-title {
+    font-size: 28px;
+    font-weight: 700;
+    color: #1a1a1a;
+    margin: 0 0 4px 0;
+}
+
+.page-subtitle {
+    color: #666;
+    margin: 0;
+}
+
+.stat-pill {
+    background: white;
+    padding: 8px 16px;
+    border-radius: 20px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+    display: flex;
+    gap: 8px;
+    font-weight: 600;
+}
+
+.stat-label {
+    color: #666;
+}
+
+.stat-value {
+    color: #007bff;
+}
+
+.data-table-container {
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.05);
+    overflow: hidden;
+}
+
+.admin-table {
+    width: 100%;
+    border-collapse: collapse;
+    text-align: left;
+}
+
+.admin-table th {
+    background-color: #fcfcfc;
+    padding: 16px;
+    font-weight: 600;
+    color: #495057;
+    border-bottom: 2px solid #edf2f7;
+    text-transform: uppercase;
+    font-size: 12px;
+    letter-spacing: 0.05em;
+}
+
+.admin-table td {
+    padding: 16px;
+    border-bottom: 1px solid #edf2f7;
+    vertical-align: top;
+}
+
+.booking-ref-cell {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.ref-code {
+    font-weight: 700;
+    color: #1a1a1a;
+    font-size: 14px;
+}
+
+.date-time {
+    font-size: 12px;
+    color: #999;
+}
+
+.user-info,
+.screen-owner-info,
+.ad-content-info {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.user-info .name,
+.screen-name,
+.ad-title {
+    font-weight: 600;
+    color: #334155;
+    font-size: 14px;
+}
+
+.user-info .email,
+.owner-detail,
+.ad-type-badge {
+    font-size: 12px;
+    color: #64748b;
+}
+
+.owner-detail {
+    display: flex;
+    gap: 4px;
+    align-items: center;
+}
+
+.owner-name {
+    color: #1e293b;
+    font-weight: 500;
+}
+
+.price {
+    font-weight: 700;
+    color: #059669;
+    font-size: 15px;
+}
+
+.badge {
+    padding: 4px 10px;
+    border-radius: 20px;
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    width: fit-content;
+    margin-top: 4px;
+}
+
+.ad-type-badge.image {
+    background-color: #dcfce7;
+    color: #166534;
+}
+
+.ad-type-badge.video {
+    background-color: #eff6ff;
+    color: #1e40af;
+}
+
+.status-badge.confirmed {
+    background-color: #dcfce7;
+    color: #166534;
+}
+
+.status-badge.held {
+    background-color: #fef9c3;
+    color: #854d0e;
+}
+
+.status-badge.cancelled {
+    background-color: #fee2e2;
+    color: #991b1b;
+}
+
+.status-badge.expired {
+    background-color: #f1f5f9;
+    color: #475569;
+}
+
+.loading-state,
+.error-state,
+.empty-table {
+    padding: 60px;
+    text-align: center;
+    color: #64748b;
+    font-size: 16px;
+}
+
+.error-state {
+    color: #dc2626;
+}

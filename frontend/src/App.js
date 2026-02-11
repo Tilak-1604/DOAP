@@ -11,6 +11,27 @@ import AddScreen from './components/AddScreen';
 import ScreenDetail from './components/ScreenDetail';
 import EditScreen from './components/EditScreen';
 import AdvertiserWorkflow from './components/AdvertiserWorkflow';
+import MyBookings from './components/MyBookings';
+import MyAds from './components/MyAds';
+import BookingEntryPage from './components/BookingEntryPage';
+import UploadAdContent from './components/UploadAdContent';
+import AdvertiserLayout from './components/Layout/AdvertiserLayout';
+import ScreenOwnerLayout from './components/Layout/ScreenOwnerLayout';
+import OwnerDashboard from './components/OwnerDashboard';
+import OwnerBookings from './components/OwnerBookings';
+import OwnerEarnings from './components/OwnerEarnings';
+import OwnerInsights from './components/OwnerInsights';
+import SpendAndPayments from './components/SpendAndPayments';
+import Statistics from './components/Statistics';
+import Settings from './components/Settings';
+import AdminLayout from './components/Layout/AdminLayout';
+import AdminDashboard from './components/AdminDashboard';
+import AdminUsers from './components/AdminUsers';
+import AdminScreens from './components/AdminScreens';
+import AdminBookings from './components/AdminBookings';
+import AdminRevenue from './components/AdminRevenue';
+import AdminReports from './components/AdminReports';
+import AdminSettings from './components/AdminSettings';
 import './App.css';
 
 // Google OAuth Client ID - Replace with your actual Client ID from Google Cloud Console
@@ -37,31 +58,26 @@ function App() {
                 }
               />
 
-              {/* Admin Only Route Example */}
+              {/* Admin Routes */}
               <Route
                 path="/admin"
                 element={
                   <ProtectedRoute requiredRoles={['ADMIN']}>
-                    <div className="admin-page">
-                      <h1>Admin Panel</h1>
-                      <p>This page is only accessible to ADMIN users.</p>
-                    </div>
+                    <AdminLayout />
                   </ProtectedRoute>
                 }
-              />
+              >
+                <Route index element={<Navigate to="/admin/dashboard" replace />} />
+                <Route path="dashboard" element={<AdminDashboard />} />
+                <Route path="users" element={<AdminUsers />} />
+                <Route path="screens" element={<AdminScreens />} />
+                <Route path="screens/create" element={<AddScreen />} />
+                <Route path="bookings" element={<AdminBookings />} />
+                <Route path="revenue" element={<AdminRevenue />} />
+                <Route path="reports" element={<AdminReports />} />
+                <Route path="settings" element={<AdminSettings />} />
+              </Route>
 
-              {/* Screen Owner Only Route Example */}
-              <Route
-                path="/owner"
-                element={
-                  <ProtectedRoute requiredRoles={['SCREEN_OWNER']}>
-                    <div className="owner-page">
-                      <h1>Screen Owner Panel</h1>
-                      <p>This page is only accessible to SCREEN_OWNER users.</p>
-                    </div>
-                  </ProtectedRoute>
-                }
-              />
 
               {/* Advertiser Only Route Example */}
               <Route
@@ -93,6 +109,54 @@ function App() {
                   </ProtectedRoute>
                 }
               />
+
+              {/* Advertiser Routes */}
+              <Route path="/advertiser" element={
+                <ProtectedRoute requiredRoles={['ADVERTISER']}>
+                  <AdvertiserLayout />
+                </ProtectedRoute>
+              }>
+                <Route path="dashboard" element={<Dashboard hideNav={true} />} />
+                <Route path="spend" element={<SpendAndPayments />} />
+                <Route path="stats" element={<Statistics />} />
+                <Route path="settings" element={<Settings />} />
+                {/* Redirect /advertiser to dashboard */}
+                <Route index element={<Navigate to="dashboard" replace />} />
+              </Route>
+
+              {/* Screen Owner Routes */}
+              <Route path="/owner" element={
+                <ProtectedRoute requiredRoles={['SCREEN_OWNER']}>
+                  <ScreenOwnerLayout />
+                </ProtectedRoute>
+              }>
+                <Route path="dashboard" element={<OwnerDashboard />} />
+                <Route path="screens" element={<ScreenList />} />
+                <Route path="bookings" element={<OwnerBookings />} />
+                <Route path="earnings" element={<OwnerEarnings />} />
+                <Route path="insights" element={<OwnerInsights />} />
+                <Route path="add-screen" element={<AddScreen />} />
+                <Route path="screens/edit/:id" element={<EditScreen />} />
+                <Route path="screens/:id" element={<ScreenDetail />} />
+                <Route path="settings" element={<Settings />} />
+                {/* Redirect /owner to dashboard */}
+                <Route index element={<Navigate to="dashboard" replace />} />
+              </Route>
+
+              {/* Legacy Advertiser Routes - Redirect or Keep for backward compatibility if needed, but better to move.
+                  For now, Dashboard is reused.
+                  However, currently Dashboard is at /dashboard.
+                  We want /advertiser/dashboard to be the main one.
+                  If user goes to /dashboard, should they see sidebar?
+                  If Dashboard component is used inside AdvertiserLayout, it will show sidebar.
+                  But the Dashboard component ITSELF has a Navbar (<nav className="dashboard-nav">).
+                  We need to remove Navbar from Dashboard if it's rendered inside Layout.
+                  Or assume Dashboard is "Overview" content only.
+                  Let's update Dashboard to conditionally render Navbar or creating a new DashboardOverview component.
+                  For now, I will use Dashboard as is, and it might have double nav.
+                  I should probably refactor Dashboard.js to remove inner nav if specific prop is passed, or just hide it via CSS in layout.
+              */}
+
               <Route
                 path="/screens/edit/:id"
                 element={
@@ -102,12 +166,50 @@ function App() {
                 }
               />
 
-              {/* Advertiser Workflow Route */}
+
+
+              {/* Booking Entry Route */}
+              <Route
+                path="/booking-start"
+                element={
+                  <ProtectedRoute requiredRoles={['ADVERTISER']}>
+                    <BookingEntryPage />
+                  </ProtectedRoute>
+                }
+              />
+
+              {/* Standalone Upload Route */}
               <Route
                 path="/create-ad"
                 element={
                   <ProtectedRoute requiredRoles={['ADVERTISER']}>
+                    <UploadAdContent />
+                  </ProtectedRoute>
+                }
+              />
+
+              {/* Advertiser Workflow (Content First Booking) */}
+              <Route
+                path="/advertiser-workflow"
+                element={
+                  <ProtectedRoute requiredRoles={['ADVERTISER']}>
                     <AdvertiserWorkflow />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/bookings"
+                element={
+                  <ProtectedRoute requiredRoles={['ADVERTISER']}>
+                    <MyBookings />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/my-ads"
+                element={
+                  <ProtectedRoute requiredRoles={['ADVERTISER']}>
+                    <MyAds />
                   </ProtectedRoute>
                 }
               />

@@ -1,10 +1,12 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { adDetailsAPI } from '../services/api';
 import './AdDetailsForm.css';
 
 const AdDetailsForm = ({ contentId, onSubmitSuccess }) => {
     const navigate = useNavigate();
     const [formData, setFormData] = useState({
+        adTitle: '',
         businessType: '',
         campaignDescription: '',
         budgetRange: '',
@@ -25,7 +27,7 @@ const AdDetailsForm = ({ contentId, onSubmitSuccess }) => {
     const timeSlots = [
         'Morning (6 AM - 12 PM)',
         'Afternoon (12 PM - 6 PM)',
-        'Evening (6 PM - 12 AM)',
+        'Evening (6 AM - 12 AM)',
         'Night (12 AM - 6 AM)',
         'All Day'
     ];
@@ -43,32 +45,26 @@ const AdDetailsForm = ({ contentId, onSubmitSuccess }) => {
         setError(null);
 
         try {
-            const token = localStorage.getItem('token');
-            const response = await fetch('http://localhost:8080/api/ad-details', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${token}`
-                },
-                body: JSON.stringify({
-                    contentId: contentId,
-                    ...formData
-                })
+            const result = await adDetailsAPI.saveAdDetails({
+                contentId: contentId,
+                ...formData
             });
 
-            if (!response.ok) {
-                throw new Error('Failed to save ad details');
-            }
-
-            const result = await response.json();
             if (onSubmitSuccess) {
                 onSubmitSuccess(result);
             } else {
                 navigate('/screens');
             }
         } catch (err) {
-            console.error(err);
-            setError('Failed to save ad details. Please try again.');
+            console.error("AdDetails Submission Error:", err);
+            const errorMessage = err.response?.data?.message || err.message || 'Failed to save ad details';
+            if (err.response) {
+                console.error("Server Response:", err.response);
+                if (err.response.status === 400) {
+                    alert("Bad Request: " + JSON.stringify(err.response.data));
+                }
+            }
+            setError(errorMessage);
         } finally {
             setLoading(false);
         }
@@ -88,6 +84,19 @@ const AdDetailsForm = ({ contentId, onSubmitSuccess }) => {
             )}
 
             <form onSubmit={handleSubmit} className="ad-details-form">
+                <div className="form-group">
+                    <label htmlFor="adTitle">Ad Title *</label>
+                    <input
+                        type="text"
+                        id="adTitle"
+                        name="adTitle"
+                        value={formData.adTitle}
+                        onChange={handleChange}
+                        placeholder="e.g., Summer Sale 2024"
+                        required
+                    />
+                </div>
+
                 <div className="form-group">
                     <label htmlFor="businessType">Business Type *</label>
                     <select

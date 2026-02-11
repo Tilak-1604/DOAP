@@ -8,7 +8,7 @@
 
 import axios from 'axios';
 
-const API_BASE_URL = 'http://localhost:8080';
+const API_BASE_URL = 'http://localhost:8081';
 
 // Create axios instance with default config
 const api = axios.create({
@@ -45,10 +45,16 @@ api.interceptors.response.use(
   (response) => response,
   (error) => {
     if (error.response?.status === 401 || error.response?.status === 403) {
-      // Token expired or invalid
-      localStorage.removeItem('token');
-      localStorage.removeItem('user');
-      window.location.href = '/login';
+      console.warn(`Auth Error: ${error.response.status} at ${error.config?.url}.`);
+
+      if (error.response?.status === 401) {
+        // Only redirect on 401 (Unauthorized) for now
+        localStorage.removeItem('token');
+        localStorage.removeItem('user');
+        window.location.href = '/login';
+      } else {
+        console.error("FORBIDDEN: You don't have permission to access this resource. Check the backend logs for 'Setting authentication' line.");
+      }
     }
     return Promise.reject(error);
   }
@@ -166,10 +172,9 @@ export const contentAPI = {
     return response.data;
   },
 
-  getMyContent: async () => {
-    const response = await api.get('/api/content/my-content');
-    return response.data;
-  }
+  getMyContent: () => api.get('/api/content/my-content').then(res => res.data),
+  getMyMetadata: () => api.get('/api/content/my-metadata').then(res => res.data),
+  deleteContent: (id) => api.delete(`/api/content/${id}`)
 };
 
 // Booking API
@@ -194,14 +199,40 @@ export const bookingAPI = {
       params: { screenId, date }
     });
     return response.data;
+  },
+  getSlots: async (screenId, date) => {
+    const response = await api.get(`/api/bookings/screen/${screenId}/slots`, { params: { date } });
+    return response.data;
+  },
+  downloadInvoice: async (bookingId) => {
+    const response = await api.get(`/api/bookings/${bookingId}/invoice`, {
+      responseType: 'blob'
+    });
+    return response.data;
   }
 };
 
+// Payment API
 export const paymentAPI = {
-  pay: async (bookingId) => {
-    const response = await api.post(`/api/payments/pay`, null, {
+  getRazorpayKey: async () => {
+    const response = await api.get(`/api/payments/razorpay-key`);
+    return response.data;
+  },
+
+  createOrder: async (bookingId) => {
+    const response = await api.post(`/api/payments/create-order`, null, {
       params: { bookingId }
     });
+    return response.data;
+  },
+
+  verifyPayment: async (paymentData) => {
+    const response = await api.post(`/api/payments/verify`, paymentData);
+    return response.data;
+  },
+
+  getMyHistory: async () => {
+    const response = await api.get('/api/payments/my-history');
     return response.data;
   }
 };
@@ -227,4 +258,62 @@ export const recommendationAPI = {
   }
 };
 
+export const ownerAPI = {
+  getDashboard: () => api.get('/api/screen-owner/dashboard').then(res => res.data),
+  getBookings: () => api.get('/api/screen-owner/bookings').then(res => res.data),
+  getEarnings: () => api.get('/api/screen-owner/earnings').then(res => res.data),
+  getInsights: () => api.get('/api/screen-owner/insights').then(res => res.data),
+};
+
+export const userAPI = {
+  updateProfile: async (data) => {
+    const response = await api.put('/api/users/profile', data);
+    return response.data;
+  },
+  changePassword: async (data) => {
+    const response = await api.put('/api/users/password', data);
+    return response.data;
+  }
+};
+
+// Admin API
+export const adminAPI = {
+  // Dashboard
+  getDashboardStats: () => api.get('/api/admin/dashboard/stats').then(res => res.data),
+
+  // User Management
+  getAllUsers: () => api.get('/api/admin/users').then(res => res.data),
+  getUsersByRole: (role) => api.get(`/api/admin/users/by-role/${role}`).then(res => res.data),
+  activateUser: (userId) => api.put(`/api/admin/users/${userId}/activate`).then(res => res.data),
+  blockUser: (userId) => api.put(`/api/admin/users/${userId}/block`).then(res => res.data),
+
+  // Screen Management
+  getAllScreens: () => api.get('/api/admin/screens').then(res => res.data),
+  getPendingScreens: () => api.get('/api/admin/screens/pending').then(res => res.data),
+  getDoapScreens: () => api.get('/api/admin/screens/doap').then(res => res.data),
+  addDoapScreen: (screenData) => api.post('/api/admin/screens/doap', screenData).then(res => res.data),
+  approveScreen: (screenId) => api.put(`/api/admin/screens/${screenId}/approve`).then(res => res.data),
+  rejectScreen: (screenId) => api.put(`/api/admin/screens/${screenId}/reject`).then(res => res.data),
+  suspendScreen: (screenId) => api.put(`/api/admin/screens/${screenId}/suspend`).then(res => res.data),
+
+  // Bookings
+  getAllBookings: () => api.get('/api/admin/bookings').then(res => res.data),
+  getBookingDetails: (bookingId) => api.get(`/api/admin/bookings/${bookingId}`).then(res => res.data),
+
+  // Revenue
+  getRevenueBreakdown: () => api.get('/api/admin/revenue/breakdown').then(res => res.data),
+
+  // Settings
+  getSettings: () => api.get('/api/admin/settings').then(res => res.data),
+  updateSettings: (settings) => api.put('/api/admin/settings', settings).then(res => res.data),
+
+  // Reporting
+  getPlatformSummary: () => api.get('/api/admin/reports/summary').then(res => res.data),
+  exportReport: (type, start, end) => api.get(`/api/admin/reports/export/${type}`, {
+    params: { start, end },
+    responseType: 'blob' // Important for CSV downloads
+  }),
+};
+
 export default api;
+

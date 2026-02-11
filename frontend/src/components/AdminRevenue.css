@@ -1,0 +1,209 @@
+.admin-revenue {
+    padding: 24px;
+    background-color: #f8f9fa;
+    min-height: 100vh;
+}
+
+.page-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 30px;
+}
+
+.page-title {
+    font-size: 28px;
+    font-weight: 700;
+    color: #1a1a1a;
+    margin: 0 0 4px 0;
+}
+
+.page-subtitle {
+    color: #64748b;
+    margin: 0;
+}
+
+.revenue-total-pill {
+    background: linear-gradient(135deg, #0f172a 0%, #334155 100%);
+    color: white;
+    padding: 12px 24px;
+    border-radius: 12px;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.revenue-total-pill .label {
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    opacity: 0.8;
+}
+
+.revenue-total-pill .value {
+    font-size: 20px;
+    font-weight: 700;
+}
+
+/* Stats Cards */
+.revenue-stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 20px;
+    margin-bottom: 30px;
+}
+
+.stat-card {
+    background: white;
+    padding: 24px;
+    border-radius: 16px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.stat-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+}
+
+.stat-card.highlight {
+    background-color: #f8fafc;
+    border-left: 4px solid #6366f1;
+}
+
+.card-icon {
+    width: 48px;
+    height: 48px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 24px;
+}
+
+.card-icon.spend {
+    background-color: #fee2e2;
+}
+
+.card-icon.payout {
+    background-color: #e0f2fe;
+}
+
+.card-icon.commission {
+    background-color: #e0e7ff;
+}
+
+.card-icon.direct {
+    background-color: #d1fae5;
+}
+
+.stat-card .label {
+    font-size: 13px;
+    color: #64748b;
+    font-weight: 500;
+}
+
+.stat-card .value {
+    font-size: 20px;
+    font-weight: 700;
+    color: #1e293b;
+    margin: 4px 0 0 0;
+}
+
+/* Charts Section */
+.revenue-charts-grid {
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    gap: 24px;
+}
+
+.chart-container {
+    background: white;
+    padding: 24px;
+    border-radius: 16px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.chart-header {
+    margin-bottom: 24px;
+}
+
+.chart-header h3 {
+    font-size: 18px;
+    font-weight: 700;
+    color: #1e293b;
+    margin: 0;
+}
+
+.chart-header p {
+    font-size: 13px;
+    color: #64748b;
+    margin: 4px 0 0 0;
+}
+
+.chart-wrapper {
+    height: 340px;
+    position: relative;
+}
+
+.chart-wrapper.doughnut {
+    height: 280px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.doughnut-center {
+    position: absolute;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.doughnut-center .percent {
+    font-size: 24px;
+    font-weight: 700;
+    color: #1e293b;
+}
+
+.doughnut-center .text {
+    font-size: 12px;
+    color: #64748b;
+    text-transform: uppercase;
+    font-weight: 600;
+}
+
+.loading-state,
+.error-state {
+    padding: 100px;
+    text-align: center;
+    font-size: 18px;
+    color: #64748b;
+}
+
+.error-state {
+    color: #dc2626;
+}
+
+@media (max-width: 1024px) {
+    .revenue-charts-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 640px) {
+    .page-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 16px;
+    }
+
+    .revenue-total-pill {
+        align-items: flex-start;
+        width: 100%;
+    }
+}

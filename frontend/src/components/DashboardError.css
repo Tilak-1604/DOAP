@@ -1,0 +1,77 @@
+.dashboard-error-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 400px;
+    padding: 2rem;
+    text-align: center;
+}
+
+.error-content {
+    max-width: 500px;
+    background: white;
+    padding: 3rem;
+    border-radius: 1rem;
+    border: 1px solid #fee2e2;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+}
+
+.error-icon {
+    font-size: 3.5rem;
+    margin-bottom: 1rem;
+}
+
+.error-title {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #1e293b;
+    margin-bottom: 1rem;
+}
+
+.error-message {
+    color: #64748b;
+    margin-bottom: 2rem;
+    line-height: 1.6;
+}
+
+.error-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+.error-actions button {
+    padding: 0.75rem 1.5rem;
+    border-radius: 0.5rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+    border: none;
+}
+
+.btn-retry {
+    background-color: #16a34a;
+    color: white;
+}
+
+.btn-retry:hover {
+    background-color: #15803d;
+}
+
+.btn-back {
+    background-color: #f1f5f9;
+    color: #475569;
+}
+
+.btn-back:hover {
+    background-color: #e2e8f0;
+}
+
+.btn-login {
+    background-color: #3b82f6;
+    color: white;
+}
+
+.btn-login:hover {
+    background-color: #2563eb;
+}

@@ -1,0 +1,42 @@
+.owner-earnings-page {
+    padding: 24px;
+    background-color: #f8fafc;
+    min-height: 100%;
+}
+
+.earnings-secondary-grid {
+    display: grid;
+    grid-template-columns: 1fr 1.5fr;
+    gap: 24px;
+}
+
+@media (max-width: 1024px) {
+    .earnings-secondary-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+.payout-card,
+.breakdown-card {
+    transition: transform 0.2s;
+}
+
+.payout-card:hover,
+.breakdown-card:hover {
+    transform: translateY(-2px);
+}
+
+.action-btn.primary {
+    background-color: #16a34a;
+    color: white;
+    border: none;
+    padding: 10px;
+    border-radius: 8px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.action-btn.primary:hover {
+    background-color: #15803d;
+}

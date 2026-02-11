@@ -2,29 +2,23 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { screenAPI } from '../services/api';
-import ApprovalButtons from './ApprovalButtons';
+import ScreenCard from './ScreenCard';
 import MapModal from './MapModal';
-import './ScreenList.css';
+import { Search, Filter, SlidersHorizontal, Map } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
 
 const ScreenList = () => {
   const [screens, setScreens] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
-
-  const { hasRole, logout } = useAuth();
+  const { hasRole } = useAuth();
   const navigate = useNavigate();
 
-  const handleLogout = async () => {
-    await logout();
-    navigate('/login');
-  };
-
   // Filters State
-  const [filterCity, setFilterCity] = useState('');
-
-  // Time Filters
+  const [searchQuery, setSearchQuery] = useState('');
   const [filterStartTime, setFilterStartTime] = useState('');
   const [filterEndTime, setFilterEndTime] = useState('');
+  const [showFilters, setShowFilters] = useState(false);
 
   // Map Modal State
   const [selectedMapScreen, setSelectedMapScreen] = useState(null);
@@ -37,7 +31,6 @@ const ScreenList = () => {
     try {
       setLoading(true);
       setError('');
-
       const params = {};
       if (filterStartTime) params.startTime = filterStartTime;
       if (filterEndTime) params.endTime = filterEndTime;
@@ -45,8 +38,9 @@ const ScreenList = () => {
       const data = await screenAPI.getAllScreens(params);
       setScreens(data);
     } catch (err) {
+      console.error("Failed to load screens", err);
       if (err.response?.status === 401 || err.response?.status === 403) {
-        navigate('/login');
+        // optionally redirect or show message
       } else {
         setError('Failed to load screens. Please try again.');
       }
@@ -55,258 +49,123 @@ const ScreenList = () => {
     }
   };
 
-  // Filter logic
-  const filteredScreens = screens.filter(screen => {
-    // Backend already filters by status/role, this is for UI search filters
-    const matchesCity = filterCity === '' ||
-      (screen.city && screen.city.toLowerCase().includes(filterCity.toLowerCase())) ||
-      (screen.pincode && screen.pincode.includes(filterCity));
-
-    return matchesCity;
-  });
-
-  const handleApprovalSuccess = () => {
-    loadScreens();
-  };
-
-  const getStatusBadgeClass = (status) => {
-    switch (status) {
-      case 'ACTIVE':
-        return 'badge-success';
-      case 'INACTIVE':
-        return 'badge-warning';
-      case 'REJECTED':
-        return 'badge-danger';
-      case 'UNDER_MAINTENANCE':
-        return 'badge-info';
-      default:
-        return 'badge-secondary';
+  const handleStatusChange = async (screenId, newStatus) => {
+    try {
+      await screenAPI.updateScreenStatus(screenId, newStatus);
+      loadScreens(); // Refresh
+    } catch (err) {
+      alert("Failed to update status");
     }
   };
 
-  if (loading) {
+  const filteredScreens = screens.filter(screen => {
+    const query = searchQuery.toLowerCase();
     return (
-      <div className="screen-list-container">
-        <div className="loading">Loading screens...</div>
-      </div>
+      (screen.city && screen.city.toLowerCase().includes(query)) ||
+      (screen.screenName && screen.screenName.toLowerCase().includes(query)) ||
+      (screen.pincode && screen.pincode.includes(query))
     );
-  }
+  });
 
   return (
-    <div className="screen-list-container">
-      {/* Header */}
-      <div className="screen-list-header">
-        <h2>{hasRole('ADVERTISER') ? 'Discover Screens' : 'Screen Management'}</h2>
-        {(hasRole('ADMIN') || hasRole('SCREEN_OWNER')) && (
-          <button
-            onClick={() => navigate('/screens/add')}
-            className="btn btn-primary"
-          >
-            + Add New Screen
-          </button>
-        )}
-        {hasRole('ADVERTISER') && (
-          <button
-            onClick={handleLogout}
-            className="btn btn-danger"
-            style={{ marginLeft: 'auto' }}
-          >
-            Logout
-          </button>
-        )}
-      </div>
-
-      {/* Filters Bar */}
-      <div className="filters-bar" style={{ display: 'flex', gap: '15px', marginBottom: '20px' }}>
-        <input
-          placeholder="Search by City or PIN..."
-          value={filterCity}
-          onChange={(e) => setFilterCity(e.target.value)}
-          style={{ padding: '8px', flex: 1 }}
-        />
-        {/* Time Filters */}
-        {hasRole('ADVERTISER') && (
-          <>
+    <div className="space-y-6">
+      {/* Header & Search Bar */}
+      <div className="bg-white rounded-2xl shadow-sm border border-slate-200 p-4 flex flex-col md:flex-row gap-4 justify-between items-center sticky top-20 z-30">
+        <div className="flex items-center gap-4 w-full md:w-auto">
+          <div className="relative flex-1 md:w-96">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" size={20} />
             <input
-              type="time"
-              value={filterStartTime}
-              onChange={(e) => setFilterStartTime(e.target.value)}
-              style={{ padding: '8px' }}
-              title="Required Start Time"
+              type="text"
+              placeholder="Search by City, Screen Name, PIN..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="w-full pl-10 pr-4 py-3 rounded-xl bg-slate-50 border border-slate-200 focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500 outline-none transition-all"
             />
-            <input
-              type="time"
-              value={filterEndTime}
-              onChange={(e) => setFilterEndTime(e.target.value)}
-              style={{ padding: '8px' }}
-              title="Required End Time"
-            />
-          </>
-        )}
-      </div>
-
-      {error && <div className="error-message">{error}</div>}
-
-      {/* Role info */}
-      {hasRole('ADMIN') && (
-        <div className="admin-info">
-          <p>You are viewing <strong>all screens</strong> in the system.</p>
+          </div>
+          <button
+            onClick={() => setShowFilters(!showFilters)}
+            className={`p-3 rounded-xl border transition-colors ${showFilters ? 'bg-brand-50 border-brand-200 text-brand-600' : 'bg-white border-slate-200 text-slate-600 hover:bg-slate-50'}`}
+          >
+            <SlidersHorizontal size={20} />
+          </button>
         </div>
-      )}
 
-      {hasRole('SCREEN_OWNER') && (
-        <div className="owner-info">
-          <p>You are viewing <strong>your screens</strong> only.</p>
-        </div>
-      )}
-
-      {/* Empty state */}
-      {filteredScreens.length === 0 ? (
-        <div className="empty-state">
-          <p>No screens found.</p>
+        <div className="flex items-center gap-3 w-full md:w-auto overflow-x-auto pb-2 md:pb-0">
           {(hasRole('ADMIN') || hasRole('SCREEN_OWNER')) && (
             <button
-              onClick={() => navigate('/screens/add')}
-              className="btn btn-primary"
+              onClick={() => navigate('/owner/add-screen')} // Assuming route alias or use conditional
+              className="btn-primary whitespace-nowrap"
             >
-              Add Your First Screen
+              + Add Screen
             </button>
           )}
         </div>
-      ) : (
-        <div className="screens-grid">
-          {filteredScreens.map((screen) => (
-            <div key={screen.id} className="screen-card">
-              {/* Card Header */}
-              <div className="screen-card-header">
-                <h3>{screen.screenName}</h3>
+      </div>
 
-                {/* Status Control for Owners/Admins */}
-                {(hasRole('SCREEN_OWNER') || (hasRole('ADMIN') && screen.ownerRole === 'ADMIN')) ? (
-                  <div className="status-control" onClick={(e) => e.stopPropagation()}>
-                    <select
-                      value={screen.status}
-                      onChange={async (e) => {
-                        const newStatus = e.target.value;
-                        try {
-                          await screenAPI.updateScreenStatus(screen.id, newStatus);
-                          loadScreens(); // Refresh list
-                        } catch (err) {
-                          alert("Failed to update status");
-                        }
-                      }}
-                      className={`status-select ${getStatusBadgeClass(screen.status)}`}
-                      style={{
-                        padding: '5px',
-                        borderRadius: '4px',
-                        border: '1px solid #ddd',
-                        fontSize: '0.85rem',
-                        fontWeight: 'bold',
-                        cursor: 'pointer'
-                      }}
-                    >
-                      <option value="ACTIVE">ACTIVE</option>
-                      <option value="INACTIVE">INACTIVE</option>
-                      <option value="UNDER_MAINTENANCE">UNDER MAINTENANCE</option>
-                      {/* REJECTED is not selectable manually, but if screen is REJECTED, show it */}
-                      {screen.status === 'REJECTED' && <option value="REJECTED" disabled>REJECTED</option>}
-                    </select>
-                  </div>
-                ) : (
-                  <span className={`status-badge ${getStatusBadgeClass(screen.status)}`}>
-                    {screen.status.replace('_', ' ')}
-                  </span>
-                )}
-              </div>
-
-              {/* Card Body */}
-              <div className="screen-card-body">
-                <div className="screen-info-item">
-                  <strong>Location:</strong>
-                  <p>{screen.city}, {screen.country}</p>
-                  <small style={{ color: '#777' }}>{screen.address} - {screen.pincode}</small>
-                  {/* Map Button */}
-                  <button
-                    className="btn btn-sm btn-info"
-                    style={{ marginTop: '5px', display: 'block', fontSize: '0.8rem', padding: '2px 8px' }}
-                    onClick={() => setSelectedMapScreen(screen)}
-                  >
-                    Show on Map
-                  </button>
-                </div>
-
-                <div style={{ display: 'flex', gap: '15px', marginTop: '10px' }}>
-                  <div className="screen-info-item">
-                    <strong>Type:</strong>
-                    <p>{screen.screenType}</p>
-                  </div>
-
-                  <div className="screen-info-item">
-                    <strong>Orientation:</strong>
-                    <p>{screen.orientation}</p>
-                  </div>
-                </div>
-
-                <div className="screen-info-item">
-                  <strong>Resolution:</strong>
-                  <p>
-                    {screen.resolutionWidth} × {screen.resolutionHeight}px
-                  </p>
-                </div>
-
-                <div className="screen-info-item">
-                  <strong>Hours:</strong>
-                  <p>{screen.activeFrom} - {screen.activeTo}</p>
-                </div>
-
-                {screen.description && (
-                  <div className="screen-info-item" style={{ marginTop: '10px' }}>
-                    <strong>Description:</strong>
-                    <p>{screen.description}</p>
-                  </div>
-                )}
-              </div>
-
-              {/* View Details for Advertiser */}
+      {/* Filters Panel (Collapsible) */}
+      <AnimatePresence>
+        {showFilters && (
+          <motion.div
+            initial={{ height: 0, opacity: 0 }}
+            animate={{ height: 'auto', opacity: 1 }}
+            exit={{ height: 0, opacity: 0 }}
+            className="bg-white rounded-xl border border-slate-200 p-4 overflow-hidden"
+          >
+            <h4 className="font-semibold text-slate-700 mb-3 flex items-center gap-2">
+              <Filter size={16} /> Filters
+            </h4>
+            <div className="flex flex-wrap gap-4">
               {hasRole('ADVERTISER') && (
-                <div className="screen-card-footer">
-                  <button
-                    className="btn btn-primary"
-                    style={{ width: '100%' }}
-                    onClick={() => navigate(`/screens/${screen.id}`)}
-                  >
-                    View Details
-                  </button>
-                </div>
-              )}
-
-              {/* Edit Button for Owner/Admin */}
-              {(hasRole('SCREEN_OWNER') || (hasRole('ADMIN') && screen.ownerRole === 'ADMIN')) && (
-                <div className="screen-card-footer" style={{ marginTop: '10px' }}>
-                  <button
-                    className="btn btn-secondary"
-                    style={{ width: '100%', fontSize: '0.9rem', padding: '8px' }}
-                    onClick={() => navigate(`/screens/edit/${screen.id}`)}
-                  >
-                    Edit Screen
-                  </button>
-                </div>
-              )}
-
-              {/* Admin Approval */}
-              {hasRole('ADMIN') && screen.status === 'INACTIVE' && screen.ownerRole !== 'ADMIN' && (
-                <div className="screen-card-footer">
-                  <ApprovalButtons
-                    screenId={screen.id}
-                    onSuccess={handleApprovalSuccess}
-                  />
-                </div>
+                <>
+                  <div className="flex flex-col gap-1">
+                    <label className="text-xs font-medium text-slate-500">Available From</label>
+                    <input
+                      type="time"
+                      value={filterStartTime}
+                      onChange={(e) => setFilterStartTime(e.target.value)}
+                      className="px-3 py-2 rounded-lg border border-slate-200 text-sm focus:border-brand-500 outline-none"
+                    />
+                  </div>
+                  <div className="flex flex-col gap-1">
+                    <label className="text-xs font-medium text-slate-500">Available To</label>
+                    <input
+                      type="time"
+                      value={filterEndTime}
+                      onChange={(e) => setFilterEndTime(e.target.value)}
+                      className="px-3 py-2 rounded-lg border border-slate-200 text-sm focus:border-brand-500 outline-none"
+                    />
+                  </div>
+                </>
               )}
             </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* Content Grid */}
+      {loading ? (
+        <div className="flex justify-center py-20">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-brand-600"></div>
+        </div>
+      ) : filteredScreens.length === 0 ? (
+        <div className="text-center py-20 bg-white rounded-2xl border border-slate-200 border-dashed">
+          <Map size={48} className="mx-auto text-slate-300 mb-4" />
+          <h3 className="text-xl font-bold text-slate-700">No screens found</h3>
+          <p className="text-slate-500 mt-2">Try adjusting your filters or search query.</p>
+        </div>
+      ) : (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+          {filteredScreens.map(screen => (
+            <ScreenCard
+              key={screen.id}
+              screen={screen}
+              onMapClick={setSelectedMapScreen}
+              onStatusChange={handleStatusChange}
+              onApprovalSuccess={loadScreens}
+            />
           ))}
         </div>
       )}
-
 
       {/* Map Modal */}
       {selectedMapScreen && (

@@ -30,9 +30,11 @@ export const AuthProvider = ({ children }) => {
   useEffect(() => {
     const token = localStorage.getItem('token');
     const userData = localStorage.getItem('user');
-    
+
     if (token && userData) {
       try {
+        const payload = JSON.parse(atob(token.split('.')[1]));
+        console.log('DEBUG: Auth payload:', payload);
         const parsedUser = JSON.parse(userData);
         setUser(parsedUser);
         setIsAuthenticated(true);
@@ -49,28 +51,28 @@ export const AuthProvider = ({ children }) => {
   const login = async (email, password) => {
     try {
       const response = await authAPI.login({ email, password });
-      
+
       // Store token
       localStorage.setItem('token', response.token);
-      
+
       // Decode token to get user info (simple base64 decode)
       const tokenParts = response.token.split('.');
       const payload = JSON.parse(atob(tokenParts[1]));
-      
+
       const userData = {
         email: payload.sub,
         roles: payload.roles || [],
       };
-      
+
       localStorage.setItem('user', JSON.stringify(userData));
       setUser(userData);
       setIsAuthenticated(true);
-      
-      return { success: true, data: response };
+
+      return { success: true, data: response, user: userData };
     } catch (error) {
       // Normalize error message for invalid credentials
       let errorMessage = 'Invalid email or password';
-      
+
       if (error.response?.status === 401) {
         errorMessage = 'Invalid email or password';
       } else if (error.response?.data) {
@@ -82,7 +84,7 @@ export const AuthProvider = ({ children }) => {
           errorMessage = 'Invalid email or password';
         }
       }
-      
+
       return {
         success: false,
         error: errorMessage,
@@ -123,54 +125,54 @@ export const AuthProvider = ({ children }) => {
     return user.roles.includes(role);
   };
 
-    // Check if user has any of the specified roles
-    const hasAnyRole = (roles) => {
-        if (!user || !user.roles) return false;
-        return roles.some(role => user.roles.includes(role));
-    };
+  // Check if user has any of the specified roles
+  const hasAnyRole = (roles) => {
+    if (!user || !user.roles) return false;
+    return roles.some(role => user.roles.includes(role));
+  };
 
-    // Google Login function
-    const googleLogin = async (idToken) => {
-        try {
-            const response = await authAPI.googleLogin(idToken);
-            
-            // Store token
-            localStorage.setItem('token', response.token);
-            
-            // Decode token to get user info (simple base64 decode)
-            const tokenParts = response.token.split('.');
-            const payload = JSON.parse(atob(tokenParts[1]));
-            
-            const userData = {
-                email: payload.sub,
-                roles: payload.roles || [],
-            };
-            
-            localStorage.setItem('user', JSON.stringify(userData));
-            setUser(userData);
-            setIsAuthenticated(true);
-            
-            return { success: true, data: response };
-        } catch (error) {
-            return {
-                success: false,
-                error: error.response?.data || 'Google login failed. Please try again.',
-            };
-        }
-    };
+  // Google Login function
+  const googleLogin = async (idToken) => {
+    try {
+      const response = await authAPI.googleLogin(idToken);
 
-    const value = {
-        user,
-        isAuthenticated,
-        loading,
-        login,
-        register,
-        logout,
-        googleLogin,
-        hasRole,
-        hasAnyRole,
-    };
+      // Store token
+      localStorage.setItem('token', response.token);
 
-    return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
+      // Decode token to get user info (simple base64 decode)
+      const tokenParts = response.token.split('.');
+      const payload = JSON.parse(atob(tokenParts[1]));
+
+      const userData = {
+        email: payload.sub,
+        roles: payload.roles || [],
+      };
+
+      localStorage.setItem('user', JSON.stringify(userData));
+      setUser(userData);
+      setIsAuthenticated(true);
+
+      return { success: true, data: response, user: userData };
+    } catch (error) {
+      return {
+        success: false,
+        error: error.response?.data || 'Google login failed. Please try again.',
+      };
+    }
+  };
+
+  const value = {
+    user,
+    isAuthenticated,
+    loading,
+    login,
+    register,
+    logout,
+    googleLogin,
+    hasRole,
+    hasAnyRole,
+  };
+
+  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 };
 

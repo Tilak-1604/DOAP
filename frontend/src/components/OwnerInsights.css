@@ -1,0 +1,31 @@
+.owner-insights-page {
+    padding: 20px;
+}
+
+.text-base {
+    font-size: 1.1rem !important;
+}
+
+.text-sm {
+    font-size: 1rem !important;
+}
+
+.info-card {
+    background: #eff6ff;
+    border: 1px solid #bfdbfe;
+    padding: 20px;
+    border-radius: 12px;
+}
+
+.info-card h3 {
+    margin-top: 0;
+    color: #1e40af;
+    font-size: 1.1rem;
+    margin-bottom: 8px;
+}
+
+.info-card p {
+    color: #1e3a8a;
+    line-height: 1.5;
+    margin: 0;
+}
