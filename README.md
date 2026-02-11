@@ -229,4 +229,15 @@ Emails are triggered only after successful state changes.
 git clone <repository-url>
 cd backend
 
+---
+
+If you want next, I can give you:
+
+- 🔥 A **short professional GitHub description (one paragraph)**
+- 🎯 A **LinkedIn-ready project summary**
+- 🎤 A **final viva explanation script**
+- 🧾 A **submission checklist**
+
+Just tell me what you need 👍
+
 
