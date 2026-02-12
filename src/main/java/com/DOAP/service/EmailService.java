@@ -59,8 +59,8 @@ public class EmailService {
 
     @Async
     public void sendBookingConfirmationEmail(String advertiserEmail, String ownerEmail,
-            Booking booking, Screen screen,
-            Double price, Double ownerEarning) {
+                                             Booking booking, Screen screen,
+                                             Double price, Double ownerEarning) {
 
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
         String timeSlot = booking.getStartDatetime().format(formatter) + " to " +
@@ -103,7 +103,7 @@ public class EmailService {
 
     @Async
     public void sendBookingCancellationEmail(String advertiserEmail, Booking booking, Screen screen,
-            Double refundAmount) {
+                                             Double refundAmount) {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
         String timeSlot = booking.getStartDatetime().format(formatter) + " to " +
                 booking.getEndDatetime().format(formatter);

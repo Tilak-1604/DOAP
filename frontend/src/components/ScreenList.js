@@ -70,7 +70,7 @@ const ScreenList = () => {
   return (
     <div className="space-y-6">
       {/* Header & Search Bar */}
-      <div className="bg-white rounded-2xl shadow-sm border border-slate-200 p-4 flex flex-col md:flex-row gap-4 justify-between items-center sticky top-20 z-30">
+      <div className="bg-white rounded-2xl shadow-sm border border-slate-200 p-4 flex flex-col md:flex-row gap-4 justify-between items-center sticky-header z-30">
         <div className="flex items-center gap-4 w-full md:w-auto">
           <div className="relative flex-1 md:w-96">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" size={20} />

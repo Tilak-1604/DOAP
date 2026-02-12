@@ -102,12 +102,12 @@ const Login = () => {
               </span>
             </h1>
             <p className="text-lg text-slate-300 max-w-md">
-              Connect with thousands of screens tailored to your audience. The premium platform for digital out-of-home advertising.
+              Connect with thousands of screens tailored to your audience. The premium platform for digital outdoor advertising.
             </p>
           </div>
 
           <div className="flex gap-4 text-sm text-slate-400">
-            <span>&copy; 2024 DOAP Inc.</span>
+            <span>&copy; 2026 DOAP Inc.</span>
             <a href="#" className="hover:text-white transition-colors">Privacy Policy</a>
             <a href="#" className="hover:text-white transition-colors">Terms of Service</a>
           </div>

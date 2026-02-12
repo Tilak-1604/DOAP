@@ -213,9 +213,9 @@ const ScreenDetail = () => {
     return (
         <div className="max-w-7xl mx-auto px-4 lg:px-8 py-8 space-y-8">
             {/* Breadcrumb / Back */}
-            <button onClick={() => navigate('/screens')} className="flex items-center gap-2 text-slate-500 hover:text-brand-600 transition-colors mb-4">
+            <button onClick={() => navigate(-1)} className="flex items-center gap-2 text-slate-500 hover:text-brand-600 transition-colors mb-4">
                 <ChevronLeft size={18} />
-                <span>Back to Screens</span>
+                <span>Back</span>
             </button>
 
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">

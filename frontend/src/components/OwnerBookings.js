@@ -101,7 +101,7 @@ const OwnerBookings = () => {
             </div>
 
             {/* Professional Tabs */}
-            <div className="tabs-container">
+            <div className="tabs-container sticky-header">
                 {['ALL', 'ACTIVE', 'UPCOMING', 'COMPLETED', 'CANCELLED'].map(tab => (
                     <button
                         key={tab}

@@ -47,7 +47,7 @@ const AdminUsers = () => {
         <div className="admin-users">
             <h1 className="page-title">User Management</h1>
 
-            <div className="filter-tabs">
+            <div className="filter-tabs sticky-header p-4 -mx-4 mb-8 bg-white/95 backdrop-blur-sm z-30 border-b border-slate-200">
                 <button className={filter === 'ALL' ? 'active' : ''} onClick={() => setFilter('ALL')}>All Users</button>
                 <button className={filter === 'ADVERTISER' ? 'active' : ''} onClick={() => setFilter('ADVERTISER')}>Advertisers</button>
                 <button className={filter === 'SCREEN_OWNER' ? 'active' : ''} onClick={() => setFilter('SCREEN_OWNER')}>Screen Owners</button>
