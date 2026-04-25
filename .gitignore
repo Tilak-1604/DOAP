@@ -36,5 +36,5 @@ build/
 application-local.properties
 application-dev.properties
 *.key
-*.json
+# *.json
 node_modules/
