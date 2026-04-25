@@ -3,6 +3,7 @@ services:
   - type: web
     name: doap-backend
     runtime: java
+    rootContext: backend
     buildCommand: ./mvnw clean install -DskipTests
     startCommand: java -jar target/DOAP-0.0.1-SNAPSHOT.jar
     envVars:
@@ -23,6 +24,7 @@ services:
   - type: web
     name: doap-ml-service
     runtime: python
+    rootContext: ml_service
     buildCommand: pip install -r requirements.txt
     startCommand: gunicorn app:app
     envVars:
