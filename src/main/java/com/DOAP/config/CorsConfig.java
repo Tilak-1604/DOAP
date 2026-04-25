@@ -17,12 +17,15 @@ import java.util.List;
 public class CorsConfig {
     
 
+    @org.springframework.beans.factory.annotation.Value("${cors.allowed-origins}")
+    private String allowedOrigins;
+
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
         
-        // Allow React frontend origin
-        configuration.setAllowedOrigins(List.of("http://localhost:3000"));
+        // Allow frontend origin from properties
+        configuration.setAllowedOrigins(List.of(allowedOrigins));
         
         // Allow common HTTP methods
         configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));

@@ -1,0 +1,30 @@
+services:
+  # Backend Spring Boot Service
+  - type: web
+    name: doap-backend
+    runtime: java
+    buildCommand: ./mvnw clean install -DskipTests
+    startCommand: java -jar target/DOAP-0.0.1-SNAPSHOT.jar
+    envVars:
+      - key: PORT
+        value: 8081
+      - key: DB_URL
+        sync: false
+      - key: DB_USERNAME
+        sync: false
+      - key: DB_PASSWORD
+        sync: false
+      - key: JWT_SECRET
+        generateValue: true
+      - key: FRONTEND_URL
+        sync: false # Set to your Vercel URL later
+
+  # ML Service
+  - type: web
+    name: doap-ml-service
+    runtime: python
+    buildCommand: pip install -r requirements.txt
+    startCommand: gunicorn app:app
+    envVars:
+      - key: PORT
+        value: 5000

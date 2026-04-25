@@ -121,6 +121,7 @@ public class ContentService {
         boolean explicitUnsafe = labels.stream().anyMatch(label -> label.confidence() >= 70 &&
                 (label.name().toLowerCase().contains("nudity") ||
                         label.name().toLowerCase().contains("sexual") ||
+                        label.name().toLowerCase().contains("Kissing") ||
                         label.name().toLowerCase().contains("violence") ||
                         label.name().toLowerCase().contains("suggestive")));
 
@@ -128,34 +129,10 @@ public class ContentService {
             cleanupAndReject(key, "Adult / sexual / violent content not allowed");
         }
 
-        // B. Human detection using Labels
+        // B. Collect image labels for metadata (human detection and document detection
+        // removed)
         List<software.amazon.awssdk.services.rekognition.model.Label> imageLabels = rekognitionService
                 .detectLabels(bucketName, key);
-
-        boolean containsHuman = imageLabels.stream().anyMatch(label -> label.confidence() >= 70 &&
-                (label.name().equalsIgnoreCase("Person") ||
-                        label.name().equalsIgnoreCase("Human") ||
-                        label.name().equalsIgnoreCase("People") ||
-                        label.name().equalsIgnoreCase("Face") ||
-                        label.name().equalsIgnoreCase("Portrait") ||
-                        label.name().equalsIgnoreCase("Selfie")));
-
-        if (containsHuman) {
-            cleanupAndReject(key, "Human images (selfies, people, portraits) are not allowed");
-        }
-
-        // C. Document detection using Labels
-        boolean isDocument = imageLabels.stream().anyMatch(label -> label.confidence() >= 70 &&
-                (label.name().equalsIgnoreCase("Document") ||
-                        label.name().equalsIgnoreCase("Text") ||
-                        label.name().equalsIgnoreCase("Page") ||
-                        label.name().equalsIgnoreCase("Paper") ||
-                        label.name().equalsIgnoreCase("Book") ||
-                        label.name().equalsIgnoreCase("ID Cards")));
-
-        if (isDocument) {
-            cleanupAndReject(key, "Document or text-based images not allowed");
-        }
 
         // Extract metadata for storage
         String detectedLabels = imageLabels.stream()
