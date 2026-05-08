@@ -32,6 +32,7 @@ import AdminBookings from './components/AdminBookings';
 import AdminRevenue from './components/AdminRevenue';
 import AdminReports from './components/AdminReports';
 import AdminSettings from './components/AdminSettings';
+import LandingPage from './components/LandingPage';
 import './App.css';
 
 // Google OAuth Client ID - Replace with your actual Client ID from Google Cloud Console
@@ -225,8 +226,8 @@ function App() {
               />
 
               {/* Default redirect */}
-              <Route path="/" element={<Navigate to="/dashboard" replace />} />
-              <Route path="*" element={<Navigate to="/dashboard" replace />} />
+              <Route path="/" element={<LandingPage />} />
+              <Route path="*" element={<Navigate to="/" replace />} />
             </Routes>
           </div>
         </Router>
