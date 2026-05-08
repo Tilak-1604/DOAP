@@ -48,7 +48,7 @@ const LandingPage = () => {
           </h1>
           <p className="hero-tagline">Smart, Secure, and AI-Powered Outdoor Advertisement Booking Platform.</p>
           <p className="hero-description">
-            DOAP is a centralized digital platform that connects Advertisers and Digital Screen Owners for seamless outdoor advertisement management. 
+            DOAP is a centralized digital platform that connects Advertisers and Digital Screen Owners for seamless outdoor advertisement management.
             The platform simplifies screen discovery, advertisement booking, payment processing, and campaign management using modern cloud technologies and AI-powered recommendations.
           </p>
           <div className="hero-actions">
@@ -78,7 +78,7 @@ const LandingPage = () => {
           <div className="about-grid">
             <div className="about-text animate-on-scroll">
               <p>
-                Traditional outdoor advertising is mostly manual, time-consuming, and lacks transparency. 
+                Traditional outdoor advertising is mostly manual, time-consuming, and lacks transparency.
                 Advertisers need to contact screen owners individually, negotiate pricing manually, and manage campaigns without any centralized system.
               </p>
               <p>

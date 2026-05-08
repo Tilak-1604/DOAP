@@ -194,7 +194,7 @@
   left: 0;
   right: 0;
   padding: 2rem;
-  background: linear-gradient(transparent, rgba(0,0,0,0.8));
+  background: linear-gradient(transparent, rgba(0, 0, 0, 0.8));
 }
 
 .glow-effect {
@@ -299,7 +299,7 @@ section {
 .workflow-step {
   position: relative;
   padding: 2rem;
-  background: rgba(255,255,255,0.02);
+  background: rgba(255, 255, 255, 0.02);
   border-radius: 15px;
   border-left: 4px solid var(--secondary);
 }
@@ -350,9 +350,17 @@ section {
   color: var(--primary);
 }
 
-.advertiser-role { background: linear-gradient(180deg, rgba(0, 242, 255, 0.05) 0%, transparent 100%); }
-.owner-role { background: linear-gradient(180deg, rgba(188, 19, 254, 0.05) 0%, transparent 100%); }
-.admin-role { background: linear-gradient(180deg, rgba(255, 255, 255, 0.05) 0%, transparent 100%); }
+.advertiser-role {
+  background: linear-gradient(180deg, rgba(0, 242, 255, 0.05) 0%, transparent 100%);
+}
+
+.owner-role {
+  background: linear-gradient(180deg, rgba(188, 19, 254, 0.05) 0%, transparent 100%);
+}
+
+.admin-role {
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.05) 0%, transparent 100%);
+}
 
 /* Tech Grid */
 .tech-grid {
@@ -418,7 +426,7 @@ section {
 /* CTA */
 .cta-section {
   text-align: center;
-  background: linear-gradient(rgba(0,0,0,0.8), rgba(0,0,0,0.8)), url('https://images.unsplash.com/photo-1497215728101-856f4ea42174?q=80&w=2070&auto=format&fit=crop');
+  background: linear-gradient(rgba(0, 0, 0, 0.8), rgba(0, 0, 0, 0.8)), url('https://images.unsplash.com/photo-1497215728101-856f4ea42174?q=80&w=2070&auto=format&fit=crop');
   background-size: cover;
   background-attachment: fixed;
 }
@@ -444,27 +452,31 @@ section {
 
 /* Responsive */
 @media (max-width: 968px) {
-  .hero-section, .about-grid, .roles-grid, .tech-grid {
+
+  .hero-section,
+  .about-grid,
+  .roles-grid,
+  .tech-grid {
     grid-template-columns: 1fr;
   }
-  
+
   .hero-section {
     text-align: center;
     padding: 2rem;
   }
-  
+
   .hero-actions {
     justify-content: center;
   }
-  
+
   .hero-title {
     font-size: 2.5rem;
   }
-  
+
   .landing-nav {
     padding: 1rem 2rem;
   }
-  
+
   .nav-links {
     display: none;
   }
